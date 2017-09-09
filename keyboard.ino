@@ -1,6 +1,5 @@
 
 #define KEYS_NUMBER 61
-#define LAST_PIN    53
 
 #define KEY_OFF               0
 #define KEY_START             1
@@ -13,14 +12,51 @@
 #define MAX_TIME_MS   120
 #define MAX_TIME_MS_N (MAX_TIME_MS - MIN_TIME_MS)
 
+#define PEDAL_PIN     21
+
+byte output_pins[] = {
+    38,
+    40,
+    42,
+    44,
+    46,
+    23,
+    25,
+    27
+};
+byte input_pins[] = {
+    22, 24,
+    26, 28,
+    30, 32,
+    34, 36,
+    29, 31,
+    33, 35,
+    37, 39,
+    41, 43
+};
+
+//uncomment the next line to inspect the number of scans per seconds
+//#define DEBUG_SCANS_PER_SECOND
+
+//uncomment the next line get the code to put inside VERY_OPTIMIZED_VERSION section in loop()
+//#define PRINT_VERY_OPTMIZED_CODE
+
+//uncomment the next line once you have done the step before
+//#define VERY_OPTIMIZED_VERSION
+
+//uncoment the next line to get text midi message at output
+//#define DEBUG_MIDI_MESSAGE
+
+#ifdef VERY_OPTIMIZED_VERSION
 #define GET_SIGNAL(out, output_bit, in, input_bit) \
     out &= ~output_bit; /* delayMicroseconds(2); */ \
     *(s++) = (in & input_bit) ? false : true;      \
     out |= output_bit;
+#endif
 
 byte          keys_state[KEYS_NUMBER];
 unsigned long keys_time[KEYS_NUMBER];
-boolean       signals[KEYS_NUMBER * 2];
+boolean       signals[sizeof(input_pins) * sizeof(output_pins)];
 boolean       pedal_enabled;
 
 void setup() {
@@ -33,14 +69,16 @@ void setup() {
         keys_state[i] = KEY_OFF;
         keys_time[i] = 0;
     }
-    i = LAST_PIN;
-    while (i > 22)
+    for (byte pin = 0; pin < sizeof(output_pins); pin++)
     {
-        pinMode(i--, OUTPUT);
-        pinMode(i--, INPUT_PULLUP);
+        pinMode(output_pins[pin], OUTPUT);
     }
-    pinMode(21, INPUT_PULLUP);
-    pedal_enabled = digitalRead(21) != HIGH;
+    for (byte pin = 0; pin < sizeof(input_pins); pin++)
+    {
+        pinMode(input_pins[pin], INPUT_PULLUP);
+    }
+    pinMode(PEDAL_PIN, INPUT_PULLUP);
+    pedal_enabled = digitalRead(PEDAL_PIN) != HIGH;
 }
 
 void send_midi_event(byte status_byte, byte key_index, unsigned long time)
@@ -54,14 +92,38 @@ void send_midi_event(byte status_byte, byte key_index, unsigned long time)
     unsigned long velocity = 127 - (t * 127 / MAX_TIME_MS_N);
     byte vel = (velocity * velocity) >> 7;
     byte key = 36 + key_index;
+#ifdef DEBUG_MIDI_MESSAGE
+    char out[32];
+    sprintf(out, "%02X %02X %02d", status_byte, key, vel);
+    Serial.println(out);
+#else
     Serial.write(status_byte);
     Serial.write(key);
     Serial.write(vel);
+#endif
 }
 
+#ifdef PRINT_VERY_OPTMIZED_CODE
 boolean first = true;
+void print_optimized_code(byte output_pin, byte input_pin)
+{
+    if (!first)
+    {
+        return;
+    }
+    uint8_t output_bit = digitalPinToBitMask(output_pin);
+    uint8_t output_port = digitalPinToPort(output_pin);
+    uint8_t input_bit = digitalPinToBitMask(input_pin);
+    uint8_t input_port = digitalPinToPort(input_pin);
+    char b[64];
+    char *t[] = {"+", "A", "B", "C", "D", "E", "F", "G", "H", "+",  "J", "K", "L"};
+    sprintf(b, "GET_SIGNAL(PORT%s, 0x%02x, PIN%s, 0x%02x)", t[output_port], output_bit, t[input_port], input_bit);
+    Serial.println(b);
+}
+#endif
+
 void loop() {
-#if 0
+#ifdef DEBUG_SCANS_PER_SECOND
     static unsigned long cycles = 0;
     static unsigned long start = 0;
     static unsigned long current = 0;
@@ -76,169 +138,36 @@ void loop() {
 #endif
     byte pedal = LOW;
     if (pedal_enabled)
-        pedal = digitalRead(21);
-    
-    boolean *s = signals;
-    
-    GET_SIGNAL(PORTB, 0x04, PINB, 0x02)
-    GET_SIGNAL(PORTB, 0x01, PINB, 0x02)
-    GET_SIGNAL(PORTB, 0x04, PINB, 0x08)
-    GET_SIGNAL(PORTB, 0x01, PINB, 0x08)
-    GET_SIGNAL(PORTB, 0x04, PINL, 0x02)
-    GET_SIGNAL(PORTB, 0x01, PINL, 0x02)
-    GET_SIGNAL(PORTB, 0x04, PINL, 0x08)
-    GET_SIGNAL(PORTB, 0x01, PINL, 0x08)
-    GET_SIGNAL(PORTB, 0x04, PINL, 0x20)
-    GET_SIGNAL(PORTB, 0x01, PINL, 0x20)
-    GET_SIGNAL(PORTB, 0x04, PINL, 0x80)
-    GET_SIGNAL(PORTB, 0x01, PINL, 0x80)
-    GET_SIGNAL(PORTB, 0x04, PING, 0x02)
-    GET_SIGNAL(PORTB, 0x01, PING, 0x02)
-    GET_SIGNAL(PORTB, 0x04, PIND, 0x80)
-    GET_SIGNAL(PORTB, 0x01, PIND, 0x80)
-    GET_SIGNAL(PORTL, 0x04, PINB, 0x02)
-    GET_SIGNAL(PORTL, 0x01, PINB, 0x02)
-    GET_SIGNAL(PORTL, 0x04, PINB, 0x08)
-    GET_SIGNAL(PORTL, 0x01, PINB, 0x08)
-    GET_SIGNAL(PORTL, 0x04, PINL, 0x02)
-    GET_SIGNAL(PORTL, 0x01, PINL, 0x02)
-    GET_SIGNAL(PORTL, 0x04, PINL, 0x08)
-    GET_SIGNAL(PORTL, 0x01, PINL, 0x08)
-    GET_SIGNAL(PORTL, 0x04, PINL, 0x20)
-    GET_SIGNAL(PORTL, 0x01, PINL, 0x20)
-    GET_SIGNAL(PORTL, 0x04, PINL, 0x80)
-    GET_SIGNAL(PORTL, 0x01, PINL, 0x80)
-    GET_SIGNAL(PORTL, 0x04, PING, 0x02)
-    GET_SIGNAL(PORTL, 0x01, PING, 0x02)
-    GET_SIGNAL(PORTL, 0x04, PIND, 0x80)
-    GET_SIGNAL(PORTL, 0x01, PIND, 0x80)
-    GET_SIGNAL(PORTL, 0x40, PINB, 0x02)
-    GET_SIGNAL(PORTL, 0x10, PINB, 0x02)
-    GET_SIGNAL(PORTL, 0x40, PINB, 0x08)
-    GET_SIGNAL(PORTL, 0x10, PINB, 0x08)
-    GET_SIGNAL(PORTL, 0x40, PINL, 0x02)
-    GET_SIGNAL(PORTL, 0x10, PINL, 0x02)
-    GET_SIGNAL(PORTL, 0x40, PINL, 0x08)
-    GET_SIGNAL(PORTL, 0x10, PINL, 0x08)
-    GET_SIGNAL(PORTL, 0x40, PINL, 0x20)
-    GET_SIGNAL(PORTL, 0x10, PINL, 0x20)
-    GET_SIGNAL(PORTL, 0x40, PINL, 0x80)
-    GET_SIGNAL(PORTL, 0x10, PINL, 0x80)
-    GET_SIGNAL(PORTL, 0x40, PING, 0x02)
-    GET_SIGNAL(PORTL, 0x10, PING, 0x02)
-    GET_SIGNAL(PORTL, 0x40, PIND, 0x80)
-    GET_SIGNAL(PORTL, 0x10, PIND, 0x80)
-    GET_SIGNAL(PORTG, 0x04, PINB, 0x02)
-    GET_SIGNAL(PORTG, 0x01, PINB, 0x02)
-    GET_SIGNAL(PORTG, 0x04, PINB, 0x08)
-    GET_SIGNAL(PORTG, 0x01, PINB, 0x08)
-    GET_SIGNAL(PORTG, 0x04, PINL, 0x02)
-    GET_SIGNAL(PORTG, 0x01, PINL, 0x02)
-    GET_SIGNAL(PORTG, 0x04, PINL, 0x08)
-    GET_SIGNAL(PORTG, 0x01, PINL, 0x08)
-    GET_SIGNAL(PORTG, 0x04, PINL, 0x20)
-    GET_SIGNAL(PORTG, 0x01, PINL, 0x20)
-    GET_SIGNAL(PORTG, 0x04, PINL, 0x80)
-    GET_SIGNAL(PORTG, 0x01, PINL, 0x80)
-    GET_SIGNAL(PORTG, 0x04, PING, 0x02)
-    GET_SIGNAL(PORTG, 0x01, PING, 0x02)
-    GET_SIGNAL(PORTG, 0x04, PIND, 0x80)
-    GET_SIGNAL(PORTG, 0x01, PIND, 0x80)
-    GET_SIGNAL(PORTC, 0x04, PINC, 0x02)
-    GET_SIGNAL(PORTC, 0x01, PINC, 0x02)
-    GET_SIGNAL(PORTC, 0x04, PINC, 0x08)
-    GET_SIGNAL(PORTC, 0x01, PINC, 0x08)
-    GET_SIGNAL(PORTC, 0x04, PINC, 0x20)
-    GET_SIGNAL(PORTC, 0x01, PINC, 0x20)
-    GET_SIGNAL(PORTC, 0x04, PINC, 0x80)
-    GET_SIGNAL(PORTC, 0x01, PINC, 0x80)
-    GET_SIGNAL(PORTC, 0x04, PINA, 0x40)
-    GET_SIGNAL(PORTC, 0x01, PINA, 0x40)
-    GET_SIGNAL(PORTC, 0x04, PINA, 0x10)
-    GET_SIGNAL(PORTC, 0x01, PINA, 0x10)
-    GET_SIGNAL(PORTC, 0x04, PINA, 0x04)
-    GET_SIGNAL(PORTC, 0x01, PINA, 0x04)
-    GET_SIGNAL(PORTC, 0x04, PINA, 0x01)
-    GET_SIGNAL(PORTC, 0x01, PINA, 0x01)
-    GET_SIGNAL(PORTC, 0x40, PINC, 0x02)
-    GET_SIGNAL(PORTC, 0x10, PINC, 0x02)
-    GET_SIGNAL(PORTC, 0x40, PINC, 0x08)
-    GET_SIGNAL(PORTC, 0x10, PINC, 0x08)
-    GET_SIGNAL(PORTC, 0x40, PINC, 0x20)
-    GET_SIGNAL(PORTC, 0x10, PINC, 0x20)
-    GET_SIGNAL(PORTC, 0x40, PINC, 0x80)
-    GET_SIGNAL(PORTC, 0x10, PINC, 0x80)
-    GET_SIGNAL(PORTC, 0x40, PINA, 0x40)
-    GET_SIGNAL(PORTC, 0x10, PINA, 0x40)
-    GET_SIGNAL(PORTC, 0x40, PINA, 0x10)
-    GET_SIGNAL(PORTC, 0x10, PINA, 0x10)
-    GET_SIGNAL(PORTC, 0x40, PINA, 0x04)
-    GET_SIGNAL(PORTC, 0x10, PINA, 0x04)
-    GET_SIGNAL(PORTC, 0x40, PINA, 0x01)
-    GET_SIGNAL(PORTC, 0x10, PINA, 0x01)
-    GET_SIGNAL(PORTA, 0x20, PINC, 0x02)
-    GET_SIGNAL(PORTA, 0x80, PINC, 0x02)
-    GET_SIGNAL(PORTA, 0x20, PINC, 0x08)
-    GET_SIGNAL(PORTA, 0x80, PINC, 0x08)
-    GET_SIGNAL(PORTA, 0x20, PINC, 0x20)
-    GET_SIGNAL(PORTA, 0x80, PINC, 0x20)
-    GET_SIGNAL(PORTA, 0x20, PINC, 0x80)
-    GET_SIGNAL(PORTA, 0x80, PINC, 0x80)
-    GET_SIGNAL(PORTA, 0x20, PINA, 0x40)
-    GET_SIGNAL(PORTA, 0x80, PINA, 0x40)
-    GET_SIGNAL(PORTA, 0x20, PINA, 0x10)
-    GET_SIGNAL(PORTA, 0x80, PINA, 0x10)
-    GET_SIGNAL(PORTA, 0x20, PINA, 0x04)
-    GET_SIGNAL(PORTA, 0x80, PINA, 0x04)
-    GET_SIGNAL(PORTA, 0x20, PINA, 0x01)
-    GET_SIGNAL(PORTA, 0x80, PINA, 0x01)
-    GET_SIGNAL(PORTA, 0x02, PINC, 0x02)
-    GET_SIGNAL(PORTA, 0x08, PINC, 0x02)
-    GET_SIGNAL(PORTA, 0x02, PINC, 0x08)
-    GET_SIGNAL(PORTA, 0x08, PINC, 0x08)
-    GET_SIGNAL(PORTA, 0x02, PINC, 0x20)
-    GET_SIGNAL(PORTA, 0x08, PINC, 0x20)
-    GET_SIGNAL(PORTA, 0x02, PINC, 0x80)
-    GET_SIGNAL(PORTA, 0x08, PINC, 0x80)
-    GET_SIGNAL(PORTA, 0x02, PINA, 0x40)
-    GET_SIGNAL(PORTA, 0x08, PINA, 0x40)
-
-    /*
-    for (byte key = 0; key < KEYS_NUMBER; key++)
     {
-        byte section_index = key >> 3;
-        byte board_index = key >> 5;
-        for (byte state_index = 0; state_index < 2; state_index++)
-        {
-            byte output_pin = state_index ? LAST_PIN - (section_index * 4) : (LAST_PIN - 2) - (section_index * 4);
-            byte input_pin = (LAST_PIN - (board_index * 16) - 1) - ((key & 0x7) * 2);
-#if 1
-            uint8_t output_bit = digitalPinToBitMask(output_pin);
-            uint8_t output_port = digitalPinToPort(output_pin);
-            volatile uint8_t *out = portOutputRegister(output_port);
-            uint8_t input_bit = digitalPinToBitMask(input_pin);
-            uint8_t input_port = digitalPinToPort(input_pin);
-            volatile uint8_t *in = portInputRegister(input_port);
-            if (first)
-            {
-                char b[64];
-                char *t[] = {"+", "A", "B", "C", "D", "E", "F", "G", "H", "+",  "J", "K", "L"};
-                sprintf(b, "GET_SIGNAL(PORT%s, 0x%02x, PIN%s, 0x%02x)", t[output_port], output_bit, t[input_port], input_bit);
-                Serial.println(b);
-            }
-            *out &= ~output_bit;
-            *(s++) = (*in & input_bit) ? false : true;
-            *out |= output_bit;
+        pedal = digitalRead(PEDAL_PIN);
+    }
+   
+    boolean *s = signals;
+#ifdef VERY_OPTIMIZED_VERSION
+    // paste the code generated by PRINT_VERY_OPTMIZED_CODE here
 #else
-            digitalWrite(output_pin, LOW);
-            *(s++) = !digitalRead(input_pin);
-            digitalWrite(output_pin, HIGH);
+    for (byte section_index = 0; section_index < sizeof(input_pins); section_index += 2)
+    {
+        for (byte o = 0; o < sizeof(output_pins); o++)
+        {
+            byte output_pin = output_pins[o];
+            for (byte i = 0; i < 2; i++)
+            {
+                byte input_pin = input_pins[section_index + i];
+#ifdef PRINT_VERY_OPTMIZED_CODE
+                print_optimized_code(output_pin, input_pin);
 #endif
+                digitalWrite(output_pin, LOW);
+                *(s++) = !digitalRead(input_pin);
+                digitalWrite(output_pin, HIGH);
+            }
         }
     }
+#ifdef PRINT_VERY_OPTMIZED_CODE
     first = false;
-    */
-    
+#endif
+#endif
+
     byte          *state  = keys_state;
     unsigned long *ktime  = keys_time;
     boolean       *signal = signals;
