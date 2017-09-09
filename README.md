@@ -11,6 +11,8 @@ In 2017 I did the same with another keyboard (an old Casio from a friend).
 The code was refactored and a great library called [DIO2](https://github.com/FryDay/DIO2)
 was used to speed up the scanning and clean up the old code.
 
+![keyboardscanner](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/keyboardscanner.jpg)
+
 ## How to make your own MIDI controller
 1) Disassemble the keyboard to have access to the flat cables (one or two, depending on the number of keys);
 2) Using a multimeter with the diode testing find out and understand the matrix order, starting from the first key;
