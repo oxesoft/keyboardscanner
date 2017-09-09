@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEY_SUSTAINED         4
 #define KEY_SUSTAINED_RESTART 5
 
-#define MIN_TIME_MS   2
-#define MAX_TIME_MS   120
+#define MIN_TIME_MS   3
+#define MAX_TIME_MS   50
 #define MAX_TIME_MS_N (MAX_TIME_MS - MIN_TIME_MS)
 
 #define PEDAL_PIN     21
@@ -104,11 +104,11 @@ void send_midi_event(byte status_byte, byte key_index, unsigned long time)
         t = MIN_TIME_MS;
     t -= MIN_TIME_MS;
     unsigned long velocity = 127 - (t * 127 / MAX_TIME_MS_N);
-    byte vel = (velocity * velocity) >> 7;
+    byte vel = (((velocity * velocity) >> 7) * velocity) >> 7;
     byte key = 36 + key_index;
 #ifdef DEBUG_MIDI_MESSAGE
     char out[32];
-    sprintf(out, "%02X %02X %02d", status_byte, key, vel);
+    sprintf(out, "%02X %02X %03d %d", status_byte, key, vel, time);
     Serial.println(out);
 #else
     Serial.write(status_byte);
