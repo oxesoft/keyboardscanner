@@ -1,4 +1,4 @@
-#Moura's Keyboard Scanner
+# Moura's Keyboard Scanner
 Turn your broken (or unused) keyboard in a MIDI controller (with pedal and veloticy)
 
 This Arduino sketch was the one that I used to make the project demonstrated
