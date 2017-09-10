@@ -24,4 +24,4 @@ Warning: this sketch is for keyboard with velocity support only.
 ## How velocity works
 Normally it is a ribbon rubber with two contacts for each key that touch the board in two diffent moments:
 since the key was pressed until it slopes the board completly. The code measure the difference, varying between
-2 and 120 ms, depending on the keyboard. Is transformed in a MIDI value from 0 to 127.
+2 and 120 ms, depending on the keyboard. It is transformed in a MIDI value from 0 to 127.
