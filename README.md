@@ -22,6 +22,6 @@ Warning: this sketch is for keyboard with velocity support only.
 4) Change the pins (if necessary) in output_pins and input_pins arrays and have fun :-)
 
 ## How velocity works
-Normally is is a ribbon rubber with two contacts for each key that touch the board in two diffent moments:
+Normally it is a ribbon rubber with two contacts for each key that touch the board in two diffent moments:
 since the key was pressed until it slopes the board completly. The code measure the difference, varying between
 2 and 120 ms, depending on the keyboard. Is transformed in a MIDI value from 0 to 127.
