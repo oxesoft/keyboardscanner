@@ -57,6 +57,22 @@ byte input_pins[] = {
     41, 43
 };
 
+//cheap keyboards often has the black keys softer or harder than the white ones
+//uncomment the next line to allow a soft correction
+//#define BLACK_KEYS_CORRECTION
+
+#ifdef BLACK_KEYS_CORRECTION
+#define MULTIPLIER 192 // 127 is the central value (corresponding to 1.0)
+byte black_keys[] = {
+    0,1,0,1,0,0,1,0,1,0,1,0,
+    0,1,0,1,0,0,1,0,1,0,1,0,
+    0,1,0,1,0,0,1,0,1,0,1,0,
+    0,1,0,1,0,0,1,0,1,0,1,0,
+    0,1,0,1,0,0,1,0,1,0,1,0,
+    0
+};
+#endif
+
 //uncomment the next line to inspect the number of scans per seconds
 //#define DEBUG_SCANS_PER_SECOND
 
@@ -98,6 +114,12 @@ void setup() {
 void send_midi_event(byte status_byte, byte key_index, unsigned long time)
 {
     unsigned long t = time;
+#ifdef BLACK_KEYS_CORRECTION
+    if (black_keys[key_index])
+    {
+        t = (t * MULTIPLIER) >> 7;
+    }
+#endif
     if (t > MAX_TIME_MS)
         t = MAX_TIME_MS;
     if (t < MIN_TIME_MS)
