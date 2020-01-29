@@ -18,81 +18,68 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "arduino2.h" // install the library from https://github.com/FryDay/DIO2
+#include "MIDIUSB.h"
 
-#define KEYS_NUMBER 61
+void noteOn(byte channel, byte pitch, byte velocity) {
+  midiEventPacket_t noteOn = {0x09, 0x90 | channel, pitch, velocity};
+  MidiUSB.sendMIDI(noteOn);
+}
+
+void noteOff(byte channel, byte pitch, byte velocity) {
+  midiEventPacket_t noteOff = {0x08, 0x80 | channel, pitch, velocity};
+  MidiUSB.sendMIDI(noteOff);
+}
+
+void controlChange(byte channel, byte control, byte value) {
+  midiEventPacket_t event = {0x0B, 0xB0 | channel, control, value};
+  MidiUSB.sendMIDI(event);
+}
+
+inline void digitalWriteDirect(int pin, boolean val){
+  if(val) g_APinDescription[pin].pPort -> PIO_SODR = g_APinDescription[pin].ulPin;
+  else    g_APinDescription[pin].pPort -> PIO_CODR = g_APinDescription[pin].ulPin;
+}
+
+inline int digitalReadDirect(int pin){
+  return !!(g_APinDescription[pin].pPort -> PIO_PDSR & g_APinDescription[pin].ulPin);
+}
+
+
+
+#define KEYS_NUMBER 88
 
 #define KEY_OFF               0
 #define KEY_START             1
 #define KEY_ON                2
 #define KEY_RELEASED          3
-#define KEY_SUSTAINED         4
-#define KEY_SUSTAINED_RESTART 5
 
-#define MIN_TIME_MS   3
-#define MAX_TIME_MS   50
+#define MIN_TIME_MS   3000
+#define MAX_TIME_MS   20000
 #define MAX_TIME_MS_N (MAX_TIME_MS - MIN_TIME_MS)
 
-#define PEDAL_PIN     21
+#define PEDAL_MIDDLE  8
+#define PEDAL_LEFT    9
+#define PEDAL_SUS     7
 
-//find out the pins using a multimeter, starting from the first key
-byte output_pins[] = {
-    38,
-    40,
-    42,
-    44,
-    46,
-    23,
-    25,
-    27
-};
-byte input_pins[] = {
-    22, 24,
-    26, 28,
-    30, 32,
-    34, 36,
-    29, 31,
-    33, 35,
-    37, 39,
-    41, 43
-};
+byte output_pins[] = {46,47,48,49,50,51,52,53};
+byte input_pins[] = {37,36,35,34,33,32,31,30,29,28,27,26,25,24,39,38,41,40,43,42,45,44};
 
-//cheap keyboards often has the black keys softer or harder than the white ones
-//uncomment the next line to allow a soft correction
-//#define BLACK_KEYS_CORRECTION
-
-#ifdef BLACK_KEYS_CORRECTION
-#define MULTIPLIER 192 // 127 is the central value (corresponding to 1.0)
-byte black_keys[] = {
-    0,1,0,1,0,0,1,0,1,0,1,0,
-    0,1,0,1,0,0,1,0,1,0,1,0,
-    0,1,0,1,0,0,1,0,1,0,1,0,
-    0,1,0,1,0,0,1,0,1,0,1,0,
-    0,1,0,1,0,0,1,0,1,0,1,0,
-    0
-};
-#endif
-
-//uncomment the next line to inspect the number of scans per seconds
-//#define DEBUG_SCANS_PER_SECOND
-
-/*
-426 cyles per second (2,35ms per cycle) using standard digitalWrite/digitalRead
-896 cyles per second (1,11ms per cycle) using DIO2 digitalWrite2/digitalRead2
-*/
-
-//uncoment the next line to get text midi message at output
+//uncomment the next line to get text midi message at output
 //#define DEBUG_MIDI_MESSAGE
 
 byte          keys_state[KEYS_NUMBER];
 unsigned long keys_time[KEYS_NUMBER];
 boolean       signals[sizeof(input_pins) * sizeof(output_pins)];
 boolean       pedal_enabled;
+boolean       is_sus;
+boolean       is_soft;
+boolean       is_middle;
+unsigned long minimumMicros;
+unsigned long maximumMicros;
 
 void setup() {
-    Serial.begin(115200);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
+    minimumMicros = 100;
+    maximumMicros = map(analogRead(A0), 0, 1023, 20000, 80000);     //Read potentiometer
     int i;
     for (i = 0; i < KEYS_NUMBER; i++)
     {
@@ -107,40 +94,65 @@ void setup() {
     {
         pinMode(input_pins[pin], INPUT_PULLUP);
     }
-    pinMode(PEDAL_PIN, INPUT_PULLUP);
-    pedal_enabled = digitalRead(PEDAL_PIN) != HIGH;
-}
 
-void send_midi_event(byte status_byte, byte key_index, unsigned long time)
-{
-    unsigned long t = time;
-#ifdef BLACK_KEYS_CORRECTION
-    if (black_keys[key_index])
-    {
-        t = (t * MULTIPLIER) >> 7;
-    }
-#endif
-    if (t > MAX_TIME_MS)
-        t = MAX_TIME_MS;
-    if (t < MIN_TIME_MS)
-        t = MIN_TIME_MS;
-    t -= MIN_TIME_MS;
-    unsigned long velocity = 127 - (t * 127 / MAX_TIME_MS_N);
-    byte vel = (((velocity * velocity) >> 7) * velocity) >> 7;
-    byte key = 36 + key_index;
-#ifdef DEBUG_MIDI_MESSAGE
-    char out[32];
-    sprintf(out, "%02X %02X %03d %d", status_byte, key, vel, time);
-    Serial.println(out);
-#else
-    Serial.write(status_byte);
-    Serial.write(key);
-    Serial.write(vel);
-#endif
+    pinMode(PEDAL_MIDDLE, INPUT_PULLUP);
+    pinMode(PEDAL_LEFT, INPUT_PULLUP);
+    pinMode(PEDAL_SUS, INPUT_PULLUP);
+    is_sus = false;
+    is_soft = false;
+    is_middle=false;
 }
 
 void loop() {
-#ifdef DEBUG_SCANS_PER_SECOND
+
+    byte a = digitalReadDirect(PEDAL_SUS);
+    byte b = digitalReadDirect(PEDAL_LEFT);
+    byte c = digitalReadDirect(PEDAL_MIDDLE);
+    //control 64 = sustain, 67 = soft, sostenuto = 66
+
+    if(a == 0){
+      if(is_sus == true){
+       controlChange(0, 64, 0);
+       is_sus = false; 
+      }
+    }
+    else{
+      if(is_sus == false){
+        controlChange(0, 64, 127);
+        is_sus = true;
+      }
+    }
+
+    if(b == 0){
+      if(is_soft == true){
+       controlChange(0, 67, 0);
+       is_soft = false; 
+      }
+    }
+    else{
+      if(is_soft == false){
+        controlChange(0, 67, 127);
+        is_soft = true;
+      }
+    }
+
+    if(c == 0){
+      if(is_middle == true){
+       controlChange(0, 66, 0);
+       is_middle = false; 
+      }
+    }
+    else{
+      if(is_middle == false){
+        controlChange(0, 66, 127);
+        is_middle = true;
+      }
+    }
+    
+
+    
+
+    #ifdef DEBUG_SCANS_PER_SECOND
     static unsigned long cycles = 0;
     static unsigned long start = 0;
     static unsigned long current = 0;
@@ -152,25 +164,20 @@ void loop() {
         cycles = 0;
         start = current;
     }
-#endif
-    byte pedal = LOW;
-    if (pedal_enabled)
-    {
-        pedal = digitalRead2(PEDAL_PIN);
-    }
-   
+    #endif
+    
     boolean *s = signals;
-    for (byte section_index = 0; section_index < sizeof(input_pins); section_index += 2)
+    for (byte section_index = 0; section_index < sizeof(input_pins); section_index += 2)  //for each input pin pair
     {
-        for (byte o = 0; o < sizeof(output_pins); o++)
+        for (byte o = 0; o < sizeof(output_pins); o++)                      //For each output pin
         {
             byte output_pin = output_pins[o];
-            for (byte i = 0; i < 2; i++)
+            for (byte i = 0; i < 2; i++)                          //for each in the pair
             {
                 byte input_pin = input_pins[section_index + i];
-                digitalWrite2(output_pin, LOW);
-                *(s++) = !digitalRead2(input_pin);
-                digitalWrite2(output_pin, HIGH);
+                digitalWriteDirect(output_pin, LOW);
+                *(s++) = !digitalReadDirect(input_pin);
+                digitalWriteDirect(output_pin, HIGH);
             }
         }
     }
@@ -188,7 +195,7 @@ void loop() {
                 if (state_index == 0 && *signal)
                 {
                     *state = KEY_START;
-                    *ktime = millis();
+                    *ktime = micros();
                 }
                 break;
             case KEY_START:
@@ -199,53 +206,50 @@ void loop() {
                 }
                 if (state_index == 1 && *signal)
                 {
+                    unsigned long t = micros() - *ktime;
                     *state = KEY_ON;
-                    send_midi_event(0x90, key, millis() - *ktime);
+                    if (t > maximumMicros)
+                    t = maximumMicros;
+                    if (t < minimumMicros)
+                    t = minimumMicros;
+                    t -= minimumMicros;
+                    byte velocity = 127 - map(t, 0, maximumMicros - minimumMicros, 1, 127);
+                    byte keys = 21 + key;
+                    //send_midi_event(0x90, key, millis() - *ktime);
+                    noteOn(0, keys, velocity);
+                    #ifdef DEBUG_MIDI_MESSAGE
+                      char out[32];
+                      sprintf(out, "%02X %02X %03d %d", 0x90, keys, velocity, t);
+                    #endif
                 }
                 break;
             case KEY_ON:
                 if (state_index == 1 && !*signal)
                 {
                     *state = KEY_RELEASED;
-                    *ktime = millis();
+                    *ktime = micros();
                 }
                 break;
             case KEY_RELEASED:
                 if (state_index == 0 && !*signal)
                 {
-                    if (pedal)
-                    {
-                        *state = KEY_SUSTAINED;
-                        break;
-                    }
+                  unsigned long t = micros() - *ktime;
                     *state = KEY_OFF;
-                    send_midi_event(0x80, key, millis() - *ktime);
-                }
-                break;
-            case KEY_SUSTAINED:
-                if (!pedal)
-                {
-                    *state = KEY_OFF;
-                    send_midi_event(0x80, key, MAX_TIME_MS);
-                }
-                if (state_index == 0 && *signal)
-                {
-                    *state = KEY_SUSTAINED_RESTART;
-                    *ktime = millis();
-                }
-                break;
-            case KEY_SUSTAINED_RESTART:
-                if (state_index == 0 && !*signal)
-                {
-                    *state = KEY_SUSTAINED;
-                    digitalWrite(13, HIGH);
-                    break;
-                }
-                if (state_index == 1 && *signal)
-                {
-                    *state = KEY_ON;
-                    send_midi_event(0x80, key, MAX_TIME_MS);
-                    send_midi_event(0x90, key, millis() - *ktime);
+                    if (t > maximumMicros)
+                    t = maximumMicros;
+                    if (t < minimumMicros)
+                    t = minimumMicros;
+                    t -= minimumMicros;
+                    byte velocity = 127 - map(t, minimumMicros, maximumMicros, 1, 127);
+                    
+                    byte keys = 21 + key;
+                    //send_midi_event(0x80, key, millis() - *ktime);
+                    noteOff(0, keys, velocity);
+                    #ifdef DEBUG_MIDI_MESSAGE
+                      char out[32];
+                      sprintf(out, "%02X %02X %03d %d", 0x80, keys, velocity, t);
+                      Serial.println(out);
+                    #endif
                 }
                 break;
             }
