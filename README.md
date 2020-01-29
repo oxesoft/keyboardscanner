@@ -4,7 +4,7 @@ This repo adapts the code provided [here](https://github.com/oxesoft/keyboardsca
 The HP-101 I picked up was completely dead, so the Arduino Due replaces the main boards inside the piano to restore its MIDI functionality. Sound is only generated from the other end of the MIDI connection (computer e.t.c), not from the Arduino itself, so the piano can no longer be used on its own. In a malfunctioning piano, the actual speakers are likely to be in working order, so it is simple enough to connect a speaker amplifier and run audio back from the device you have generating it.
 
 
-![keyboardscanner](https://raw.githubusercontent.com/hobbsjacob/keyboardscanner/master/overview.png)
+![Overview](https://raw.githubusercontent.com/hobbsjacob/keyboardscanner/master/overview.png)
 
 
 ## Changes 
@@ -35,6 +35,6 @@ Most digital pianos offer a method of adjusting the velocity of the keys to suit
 ## Connections
 
 
-![keyboardscanner](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/keyboardscanner.jpg)
+![Schematic](https://raw.githubusercontent.com/hobbsjacob/keyboardscanner/master/schematic.png)
 
 With the conductor of the FPC cable facing upwards, the side of the connector facing towards you is numbered left to right.
