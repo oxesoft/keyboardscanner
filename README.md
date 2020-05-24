@@ -11,6 +11,9 @@ In 2017 I did the same with another keyboard (an old Casio from a friend).
 The code was refactored and a great library called [DIO2](https://github.com/FryDay/DIO2)
 was used to speed up the scanning and clean up the old code.
 
+In 2020, thanks to Leandro Meucchi, from Argentina, the code is simpler to be used with any keyboard.
+He made the PDF showing the keyboard wiring for Yamaha PSR530 keyboard that helps a lot what need to be done.
+
 Warning: this sketch is for keyboard with velocity support only.
 
 ![keyboardscanner](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/keyboardscanner.jpg)

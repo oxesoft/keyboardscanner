@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "arduino2.h" // install the library from https://github.com/FryDay/DIO2
+#include <DIO2.h> // install the library DIO2
 
 #define KEYS_NUMBER 61
 
@@ -36,25 +36,282 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PEDAL_PIN     21
 
 //find out the pins using a multimeter, starting from the first key
+
+//the following configuration is specific for PSR530
+//thanks Leandro Meucchi, from Argentina, by the PDF
+//see PSR530.pdf and modify the following mapping according to the wiring of your keyboard
+#define PIN_A1  33
+#define PIN_A2  32
+#define PIN_A3  31
+#define PIN_A4  30
+#define PIN_A5  29
+#define PIN_A6  28
+#define PIN_A7  27
+#define PIN_A8  26
+#define PIN_A9  25
+#define PIN_A10 24
+#define PIN_A11 23
+#define PIN_A12 22
+#define PIN_B1  40
+#define PIN_B2  39
+#define PIN_B3  38
+#define PIN_B4  37
+#define PIN_B5  36
+#define PIN_B6  35
+#define PIN_B7  34
+#define PIN_C1  45
+#define PIN_C2  44
+#define PIN_C3  43
+#define PIN_C4  42
+#define PIN_C5  41
+
 byte output_pins[] = {
-    38,
-    40,
-    42,
-    44,
-    46,
-    23,
-    25,
-    27
+    PIN_B6, //C0
+    PIN_B6,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B7,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5,
+    PIN_B5, //C1
+    PIN_B5,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B4,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3,
+    PIN_B3, //C2
+    PIN_B3,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B2,
+    PIN_B1,
+    PIN_B1,
+    PIN_B1,
+    PIN_B1,
+    PIN_B1,
+    PIN_B1,
+    PIN_C1,
+    PIN_C1,
+    PIN_C1,
+    PIN_C1,
+    PIN_C1, //C3
+    PIN_C1,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C2,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3,
+    PIN_C3, //C4
+    PIN_C3,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C4,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5,
+    PIN_C5, //C5
+    PIN_C5
 };
 byte input_pins[] = {
-    22, 24,
-    26, 28,
-    30, 32,
-    34, 36,
-    29, 31,
-    33, 35,
-    37, 39,
-    41, 43
+    PIN_A9, //C0
+    PIN_A10,
+    PIN_A9,
+    PIN_A10,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A3,
+    PIN_A4,
+    PIN_A1,
+    PIN_A2,
+    PIN_A11,
+    PIN_A12,
+    PIN_A11,
+    PIN_A12,
+    PIN_A1,
+    PIN_A2,
+    PIN_A3,
+    PIN_A4,
+    PIN_A8,
+    PIN_A7,
+    PIN_A6,
+    PIN_A5,
+    PIN_A9, //C1
+    PIN_A10,
+    PIN_A9,
+    PIN_A10,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A3,
+    PIN_A4,
+    PIN_A1,
+    PIN_A2,
+    PIN_A11,
+    PIN_A12,
+    PIN_A11,
+    PIN_A12,
+    PIN_A1,
+    PIN_A2,
+    PIN_A3,
+    PIN_A4,
+    PIN_A8,
+    PIN_A7,
+    PIN_A6,
+    PIN_A5,
+    PIN_A9, //C2
+    PIN_A10,
+    PIN_A9,
+    PIN_A10,
+    PIN_A1,
+    PIN_A2,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A3,
+    PIN_A4,
+    PIN_A11,
+    PIN_A12,
+    PIN_A11,
+    PIN_A12,
+    PIN_A3,
+    PIN_A4,
+    PIN_A9,
+    PIN_A10,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A1, //C3
+    PIN_A2,
+    PIN_A1,
+    PIN_A2,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A3,
+    PIN_A4,
+    PIN_A9,
+    PIN_A10,
+    PIN_A11,
+    PIN_A12,
+    PIN_A11,
+    PIN_A12,
+    PIN_A1,
+    PIN_A2,
+    PIN_A3,
+    PIN_A4,
+    PIN_A8,
+    PIN_A7,
+    PIN_A6,
+    PIN_A5,
+    PIN_A9, //C4
+    PIN_A10,
+    PIN_A9,
+    PIN_A10,
+    PIN_A11,
+    PIN_A12,
+    PIN_A6,
+    PIN_A5,
+    PIN_A8,
+    PIN_A7,
+    PIN_A3,
+    PIN_A4,
+    PIN_A1,
+    PIN_A2,
+    PIN_A1,
+    PIN_A2,
+    PIN_A11,
+    PIN_A12,
+    PIN_A3,
+    PIN_A4,
+    PIN_A8,
+    PIN_A7,
+    PIN_A6,
+    PIN_A5,
+    PIN_A9, //C5
+    PIN_A10
 };
 
 //cheap keyboards often has the black keys softer or harder than the white ones
@@ -86,7 +343,7 @@ byte black_keys[] = {
 
 byte          keys_state[KEYS_NUMBER];
 unsigned long keys_time[KEYS_NUMBER];
-boolean       signals[sizeof(input_pins) * sizeof(output_pins)];
+boolean       signals[KEYS_NUMBER * 2];
 boolean       pedal_enabled;
 
 void setup() {
@@ -160,19 +417,13 @@ void loop() {
     }
    
     boolean *s = signals;
-    for (byte section_index = 0; section_index < sizeof(input_pins); section_index += 2)
+    for (byte i = 0; i < KEYS_NUMBER * 2; i++)
     {
-        for (byte o = 0; o < sizeof(output_pins); o++)
-        {
-            byte output_pin = output_pins[o];
-            for (byte i = 0; i < 2; i++)
-            {
-                byte input_pin = input_pins[section_index + i];
-                digitalWrite2(output_pin, LOW);
-                *(s++) = !digitalRead2(input_pin);
-                digitalWrite2(output_pin, HIGH);
-            }
-        }
+        byte output_pin = output_pins[i];
+        byte input_pin = input_pins[i];
+        digitalWrite2(output_pin, LOW);
+        *(s++) = !digitalRead2(input_pin);
+        digitalWrite2(output_pin, HIGH);
     }
 
     byte          *state  = keys_state;
