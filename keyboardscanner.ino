@@ -36,10 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PEDAL_PIN     21
 
 //find out the pins using a multimeter, starting from the first key
+//see the picture key_scheme.png to understand how to map the inputs and outputs
 
 //the following configuration is specific for PSR530
 //thanks Leandro Meucchi, from Argentina, by the PDF
-//see PSR530.pdf and modify the following mapping according to the wiring of your keyboard
+//take a look at the scheme detailed in PSR530.pdf and modify the following mapping according to the wiring of your keyboard
 #define PIN_A1  33
 #define PIN_A2  32
 #define PIN_A3  31
