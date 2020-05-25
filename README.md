@@ -35,4 +35,5 @@ since the key was pressed until it slopes the board completly. The code measure 
 ## Diagram of one key
 This scheme makes clear how to identify input and output pins. This has been the main question of guys on Youtube.
 I hope it helps:
-![keyboardscanner](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/key_scheme.jpg)
+
+![key](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/key_scheme.png)
