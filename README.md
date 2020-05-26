@@ -12,20 +12,11 @@ The code was refactored and a great library called [DIO2](https://github.com/Fry
 was used to speed up the scanning and clean up the old code.
 
 In 2020, thanks to Leandro Meucchi, from Argentina, the code is simpler to be used with any keyboard.
-He made the PDF showing the keyboard wiring for Yamaha PSR530 keyboard that helps a lot what need to be done.
+He made the PDF showing the keyboard wiring for Yamaha PSR530 keyboard, that helps a lot do understand what needs to be done.
 
 Warning: this sketch is for keyboard with velocity support only.
 
 ![keyboardscanner](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/keyboardscanner.jpg)
-
-## How to make your own MIDI controller
-1) Disassemble the keyboard to have access to the flat cables (one or two, depending on the number of keys);
-2) Using a multimeter with the diode testing find out and understand the matrix order, starting from the first key;
-3) Connect the ribbon pins **directly** to the Arduino Mega (because it has enough pins to a 61 keys keyboard with velocity);
-4) You **dont't** need to change anything in the keyboard circuit board;
-5) Change the pins in the code (output_pins + input_pins), uncomment DEBUG_MIDI_MESSAGE and see the console output;
-6) If the MIDI messages looks nice, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge like the excelent [Hairless](https://projectgus.github.io/hairless-midiserial/);
-7) If everything goes well, consider turn you Arduino in a MIDI interface using [HIDUINO](https://github.com/ddiakopoulos/hiduino) or similar firmware.
 
 ## How velocity works
 Normally it is a ribbon rubber with two contacts for each key that touch the board in two diffent moments:
@@ -37,3 +28,12 @@ This scheme makes clear how to identify input and output pins. This has been the
 I hope it helps:
 
 ![key](https://raw.githubusercontent.com/oxesoft/keyboardscanner/master/key_scheme.png)
+
+## How to make your own MIDI controller
+1) Disassemble the keyboard to have access to the flat cables (one, two or even three, depending on the number of keys and manufacturer);
+2) Using a multimeter with the diode testing function selected, find out and understand the matrix, starting from the first key. Some keyboards have a logical pattern, some doesn't;
+3) Connect the ribbon pins **directly** to the Arduino Mega (because it has enough pins to connect any keyboard with velocity). You **dont't** need to change anything in the keyboard circuit board;
+4) Change the pins in the code (output_pins + input_pins), uncomment DEBUG_MIDI_MESSAGE and see the console output;
+5) If the MIDI messages looks OK, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge like the excelent [Hairless](https://projectgus.github.io/hairless-midiserial/);
+6) If everything goes well, consider turn you Arduino in a MIDI interface using [HIDUINO](https://github.com/ddiakopoulos/hiduino) or similar firmware.
+7) Enjoy!
