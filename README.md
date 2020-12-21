@@ -3,7 +3,12 @@ This repo adapts the code provided [here](https://github.com/oxesoft/keyboardsca
 
 The HP-101 I picked up was completely dead, so the Arduino Due replaces the main boards inside the piano to restore its MIDI functionality. Sound is only generated from the other end of the MIDI connection (computer e.t.c), not from the Arduino itself, so the piano can no longer be used on its own. In a malfunctioning piano, the actual speakers are likely to be in working order, so it is simple enough to connect a speaker amplifier and run audio back from the device you have generating it.
 
+#### PCB Update
+I've created a PCB to make connecting the flat pack cables from the piano to the Arduino easier. The gerber files and BOM are now available.
 
+![Overview](https://raw.githubusercontent.com/hobbsjacob/keyboardscanner/master/PCB/PCB.JPG)
+
+---
 ![Overview](https://raw.githubusercontent.com/hobbsjacob/keyboardscanner/master/overview.png)
 
 
