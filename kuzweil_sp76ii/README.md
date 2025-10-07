@@ -1,6 +1,8 @@
+# Version
+
 This version implements sensitivity curves and splits the code, it was built for the kurzweil sp76ii, but can be easily adapted to another keyboard.
 
-# Source code
+## Source code
 
 - code_tabs.ino:Main file for execution.
 - config.h: Pin definitions and global constants, as well as key mapping and starting configurations.
