@@ -7,8 +7,8 @@
 896 cyles per second (1,11ms per cycle) using DIO2 digitalWrite2/digitalRead2
 */
 
-// #define DEBUG_VELOCITY  // Ativa modo debug para verificar valores de MIN_TIME_MS e MAX_TIME_MS
-#define SERIAL_SPEED 115200 // 115200 for hairless - 31250 for MOCO lufa  VELOCIDADE SERIAL
+// #define DEBUG_VELOCITY  // Enables debug mode to check MIN_TIME_MS and MAX_TIME_MS values
+#define SERIAL_SPEED 115200 // 115200 for hairless - 31250 for MOCO lufa  SERIAL SPEED
 
 // ========= KEYS =========
 #define KEYS_NUMBER 76 // Number of keyboard keys
@@ -20,7 +20,7 @@
 #define KEY_SUSTAINED 4
 #define KEY_SUSTAINED_RESTART 5
 
-// ========= SENSIBILIDADE TECLAS =========
+// ========= KEY SENSITIVITY =========
 #define MIN_TIME_MS 10 // Decrease to capture faster taps
 #define MAX_TIME_MS 80 // Increase for greater dynamic range
 #define MAX_TIME_MS_N (MAX_TIME_MS - MIN_TIME_MS)

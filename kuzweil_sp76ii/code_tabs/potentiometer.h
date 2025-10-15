@@ -1,6 +1,6 @@
 void potentiometers()
 {
-    // Debug somente
+    // Debug only
     for (int i = 0; i < N_POTS; i++)
     {
         // Serial.print(potCState[i]); Serial.print(" ");
@@ -19,7 +19,7 @@ void potentiometers()
         }
         else if (i == 1)
         { // Pitchbend
-            // Aplica filtro para suavizar leitura
+            // Apply filter to smooth reading
             int rawValue = map(potCState[i], 215, 795, 0, 16383);
             midiCState[i] = (midiCState[i] * 0.7) + (rawValue * 0.3);
 
@@ -66,13 +66,13 @@ void potentiometers()
             midiPState[i] = midiCState[i];
         }
 
-        // Reset controls quando parado
+        // Reset controls when stopped
         if (!potMoving)
         {
             if (i == 1 && abs(midiCState[i] - 8192) < 100)
             { // Pitchbend center
                 midiCState[i] = 8192;
-                send_midi_eventcc(0xE0, 0, 64); // Centro exato
+                send_midi_eventcc(0xE0, 0, 64); // Exact center
             }
             else if (i == 0 && midiCState[i] < 10 && !mod)
             { // Modulation reset

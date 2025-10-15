@@ -89,3 +89,5 @@ NOTE: only Arduino Megas/Unos with this chip will work with this procedure.
 ## OPERATION
 
 To see the project in progress, visit [my YouTube channel](https://youtube.com/@emersonseiler?sub_confirmation=1)
+
+#### Salmos 150 | Psalm 150 🙏🏼
