@@ -8,7 +8,7 @@
 */
 
 // #define DEBUG_VELOCITY  // Enables debug mode to check MIN_TIME_MS and MAX_TIME_MS values
-#define SERIAL_SPEED 115200 // 115200 for hairless - 31250 for MOCO lufa  SERIAL SPEED
+#define SERIAL_SPEED 31250 // 115200 for hairless - 31250 for MOCO lufa  SERIAL SPEED
 
 // ========= KEYS =========
 #define KEYS_NUMBER 76 // Number of keyboard keys

@@ -35,7 +35,7 @@ void send_midi_event(byte status_byte, byte key_index, unsigned long time)
     t -= MIN_TIME_MS;
 
     // Speed ​​calculation based on curve
-    byte velocity = concaveCurve[min(MAX_VEL_CURVE_INDEX, time)];
+    byte velocity = linearCurve[min(MAX_VEL_CURVE_INDEX, time)];
 
     // byte vel = velocity;
     byte vel = (((velocity * velocity) >> 7) * velocity) >> 7;
