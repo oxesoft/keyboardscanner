@@ -18,23 +18,35 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "globals.h"
+#define DEFINE_MODEL_IO_PINS
+#import "globals.h"
 
-void setup() {
-    Serial.begin(SERIAL_SPEED);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
-    initStates();
-    initIOPins();
+boolean matrix_signals[KEYS_NUMBER * 2];
+byte sustain_pedal_signal;
+
+void initIOPins()
+{
+    for (byte pin = 0; pin < sizeof(output_pins); pin++)
+    {
+        pinMode(output_pins[pin], OUTPUT);
+    }
+    for (byte pin = 0; pin < sizeof(input_pins); pin++)
+    {
+        pinMode(input_pins[pin], INPUT_PULLUP);
+    }
+    pinMode(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
 }
 
-void loop() {
-#ifdef DEBUG_SCANS_PER_SECOND
-    countCycles();
-#endif
-    scanMatrix();
-    updateStates();
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    readPotentiometers();
-#endif
+void scanMatrix()
+{
+    boolean *s = matrix_signals;
+    for (byte i = 0; i < KEYS_NUMBER * 2; i++)
+    {
+        byte output_pin = output_pins[i];
+        byte input_pin = input_pins[i];
+        digitalWrite2(output_pin, LOW);
+        *(s++) = !digitalRead2(input_pin);
+        digitalWrite2(output_pin, HIGH);
+    }
+    sustain_pedal_signal = digitalRead2(SUSTAIN_PEDAL_PIN);
 }
