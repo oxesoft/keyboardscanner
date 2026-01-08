@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PIN_CB36 53
 
 #ifdef DEFINE_MODEL_IO_PINS
-byte output_pins[] = {
+byte output_pins[KEYS_NUMBER * 2] = {
     // SMALLER BOARD 32 KEYS
     PIN_CA9,
     PIN_CA9,
@@ -232,7 +232,7 @@ byte output_pins[] = {
     PIN_CB30
 };
 
-byte input_pins[] = {
+byte input_pins[KEYS_NUMBER * 2] = {
     // SMALLER BOARD 32 KEYS
     PIN_CA1,
     PIN_CA2,

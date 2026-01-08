@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PIN_C5  41
 
 #ifdef DEFINE_MODEL_IO_PINS
-byte output_pins[] = {
+byte output_pins[KEYS_NUMBER * 2] = {
     PIN_B6, //C0
     PIN_B6,
     PIN_B7,
@@ -174,7 +174,7 @@ byte output_pins[] = {
     PIN_C5, //C5
     PIN_C5
 };
-byte input_pins[] = {
+byte input_pins[KEYS_NUMBER * 2] = {
     PIN_A9, //C0
     PIN_A10,
     PIN_A9,

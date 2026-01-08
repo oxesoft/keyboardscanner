@@ -1,9 +1,13 @@
-#include <Arduino.h>
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#if TEST_MODE
+#include "tests/mocks.h"
+#else
+#include <Arduino.h>
 #include <DIO2.h> // install the library DIO2
+#endif
 
 #define VELOCITY_CURVE_LINEAR    0
 #define VELOCITY_CURVE_CONVEX    1

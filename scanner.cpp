@@ -26,15 +26,14 @@ byte sustain_pedal_signal;
 
 void initIOPins()
 {
-    for (byte pin = 0; pin < sizeof(output_pins); pin++)
+    for (byte pin = 0; pin < (KEYS_NUMBER * 2); pin++)
     {
         pinMode(output_pins[pin], OUTPUT);
-    }
-    for (byte pin = 0; pin < sizeof(input_pins); pin++)
-    {
         pinMode(input_pins[pin], INPUT_PULLUP);
+        matrix_signals[pin] = HIGH;
     }
     pinMode(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
+
 }
 
 void scanMatrix()

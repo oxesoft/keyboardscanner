@@ -40,35 +40,8 @@ const byte *velocityCurves[] = {
 };
 #endif
 
-#ifdef DEBUG_VELOCITY
-void debugVelocityTimes(byte key_index, unsigned long time)
-{
-    unsigned long t = constrain(time, MIN_TIME_MS, MAX_TIME_MS);
-    t -= MIN_TIME_MS;
-
-    byte velocity = constrain(
-        127 - ((t * 127) / MAX_TIME_MS_N),
-        0,
-        127
-    );
-
-    char debug_msg[32];
-    sprintf(
-        debug_msg,
-        "KEY:%02d TIME:%03lu VEL:%03d",
-        key_index,
-        time,
-        velocity
-    );
-    Serial.println(debug_msg);
-}
-#endif
-
 void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
 {
-#ifdef DEBUG_VELOCITY
-    debugVelocityTimes(key_index, time);
-#else
     unsigned long t = constrain(time, MIN_TIME_MS, MAX_TIME_MS);
     t -= MIN_TIME_MS;
 
@@ -78,30 +51,35 @@ void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
         t = (t * BLACK_KEYS_MULTIPLIER) >> 7;
     }
 #endif
-    unsigned long velocity = 127 - ((t * 127) / MAX_TIME_MS_N);
+    unsigned long linear_velocity = 127 - ((t * 127) / MAX_TIME_MS_N);
 #ifdef VELOCITY_CURVE
-    byte vel = velocityCurves[VELOCITY_CURVE][MAX_VEL_CURVE_INDEX - min(MAX_VEL_CURVE_INDEX, velocity)];
+    byte vel = velocityCurves[VELOCITY_CURVE][MAX_VEL_CURVE_INDEX - min(MAX_VEL_CURVE_INDEX, linear_velocity)];
 #else
-    // default cubic response curve
-    byte vel = (((velocity * velocity) >> 7) * velocity) >> 7;
+    byte vel = linear_velocity;
 #endif
     byte key = FIRST_KEY + key_index;
 
-#ifdef DEBUG_MIDI_MESSAGE
-    char out[32];
-    sprintf(out, "%02X %02X %03d %d", status_byte, key, vel, time);
-    Serial.println(out);
+#ifdef DEBUG_VELOCITY_TIMES
+    char debug_msg[32];
+    snprintf(
+        debug_msg,
+        sizeof(debug_msg),
+        "KEY:%02d TIME:%03lu VEL:%03d",
+        key_index,
+        time,
+        vel
+    );
+    Serial.println(debug_msg);
 #else
     sendMidiEvent(status_byte, key, vel);
 #endif
-#endif // DEBUG_VELOCITY
 }
 
 void sendMidiEvent(byte status_byte, byte data1, byte data2)
 {
 #ifdef DEBUG_MIDI_MESSAGE
     char out[32];
-    sprintf(out, "%02X %02X %02X", status_byte, data1, data2);
+    snprintf(out, sizeof(out), "%02X %02X %02X", status_byte, data1, data2);
     Serial.println(out);
 #else
     Serial.write(status_byte);

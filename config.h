@@ -12,9 +12,12 @@ For reference, I've got these results at the time that I tested it:
 // #define DEBUG_MIDI_MESSAGE
 
 // Enables debug mode to check MIN_TIME_MS and MAX_TIME_MS values
-// #define DEBUG_VELOCITY
+// #define DEBUG_VELOCITY_TIMES
 
 // Uncomment for using one of the available velocity curves
+// #define VELOCITY_CURVE VELOCITY_CURVE_LINEAR
+// #define VELOCITY_CURVE VELOCITY_CURVE_CONVEX
+// #define VELOCITY_CURVE VELOCITY_CURVE_SATURATED
 // #define VELOCITY_CURVE VELOCITY_CURVE_CONCAVE
 
 // Cheap keyboards often has the black keys softer or harder than the white ones
