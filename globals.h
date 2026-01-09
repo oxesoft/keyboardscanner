@@ -14,6 +14,16 @@
 #define VELOCITY_CURVE_SATURATED 2
 #define VELOCITY_CURVE_CONCAVE   3
 
+#define POT_TYPE_PITCHBEND       0xE000
+#define POT_TYPE_MODWHEEL        0xB001
+#define POT_TYPE_VOLUME          0xB007
+#define POT_TYPE_PAN             0xB00A
+#define POT_TYPE_EXPRESSION      0xB00B
+#define POT_TYPE_RESONANCE       0xB047
+#define POT_TYPE_FILTER          0xB04A
+#define POT_TYPE_REVERB          0xB05B
+#define POT_TYPE_CHORUS          0xB05D
+
 #include "config.h"
 
 #define KEY_OFF                  0
@@ -33,6 +43,7 @@ void updateStates();
 void sendKeyEvent(byte status_byte, byte key_index, unsigned long time);
 void sendMidiEvent(byte status_byte, byte data1, byte data2);
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
+void initPotentiometers();
 void readPotentiometers();
 #endif
 

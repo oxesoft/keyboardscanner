@@ -36,7 +36,17 @@ For reference, I've got these results at the time that I tested it:
 // };
 // #endif
 
-// Uncoment the following line to use potentiometers (pitch bend, modulation wheel, knobs and sliders)
+// Uncoment the following lines to use potentiometers (pitch bend, modulation wheel, knobs and sliders)
 // #define ENABLE_POTENTIOMETER_SUPPORT
+// #define POTS_RESOLUTION_MILISECONDS   5
+// #define POTS_THREASHOLD_VALUE         8 // 1024 divided by 128
+// #define POTS_PB_CENTER_DEADZONE       4
+// #define POTS_NUMBER                   1
+// const int POTS_ANALOG_PINS[POTS_NUMBER] = {
+//     A0
+// };
+// const int POTS_TYPES[POTS_NUMBER] = {
+//     POT_TYPE_PITCHBEND
+// };
 
 #define SERIAL_SPEED 31250 // 115200 for hairless; 31250 for MOCO lufa

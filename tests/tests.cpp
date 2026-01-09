@@ -22,11 +22,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 
 // please change config.h to include "models/kurzweil_sp76ii/model.h" and turn off velocity curve
-int main() {
+int main()
+{
     setup();
-    assert(Serial.getAvailableBytes() == 0);
+    assert(Serial.available() == 0);
+
+#ifdef ENABLE_POTENTIOMETER_SUPPORT // please change config.h to have 1 pitch wheel potentiometer on pin A0
+    setPotentiometerValue(0, 512);
+    // test rate control
+    assert(getAnalogReadsCount() == 0);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
     loop();
-    assert(Serial.getAvailableBytes() == 0);
+    assert(getAnalogReadsCount() == POTS_NUMBER);
+    // test that nothing happens with pitch bend at center position (no bend)
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 0);
+    // tests that a MIDI message is sent moving pith bend all the way up
+    setPotentiometerValue(0, 1023);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xE0);
+    assert(Serial.read() == 0x70);
+    assert(Serial.read() == 0x7F);
+    // tests that a MIDI message is sent moving pith bend all the way down
+    setPotentiometerValue(0, 0);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xE0);
+    assert(Serial.read() == 0x00);
+    assert(Serial.read() == 0x00);
+#endif
 
     // start pressing first key
     setRubberKey(0, RUBBER_KEY_PRESSED);
@@ -34,10 +62,10 @@ int main() {
     // fully immediate pressing first key
     setRubberKey(1, RUBBER_KEY_PRESSED);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x90);
-    assert(Serial.readWrittenByte() == 0x1C);
-    assert(Serial.readWrittenByte() == 0x7F);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x90);
+    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == 0x7F);
 
     // start releasing first key
     setRubberKey(1, RUBBER_KEY_RELEASED);
@@ -45,10 +73,10 @@ int main() {
     // fully pressing first key with maximum velocity
     setRubberKey(0, RUBBER_KEY_RELEASED);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x80);
-    assert(Serial.readWrittenByte() == 0x1C);
-    assert(Serial.readWrittenByte() == 0x7F);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x80);
+    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == 0x7F);
 
     // start pressing first key
     setRubberKey(0, RUBBER_KEY_PRESSED);
@@ -57,10 +85,10 @@ int main() {
     advanceMockMillis(MAX_TIME_MS);
     setRubberKey(1, RUBBER_KEY_PRESSED);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x90);
-    assert(Serial.readWrittenByte() == 0x1C);
-    assert(Serial.readWrittenByte() == 0x00);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x90);
+    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == 0x00);
 
     // start releasing first key
     setRubberKey(1, RUBBER_KEY_RELEASED);
@@ -69,10 +97,10 @@ int main() {
     advanceMockMillis(MAX_TIME_MS);
     setRubberKey(0, RUBBER_KEY_RELEASED);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x80);
-    assert(Serial.readWrittenByte() == 0x1C);
-    assert(Serial.readWrittenByte() == 0x00);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x80);
+    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == 0x00);
 
     // start pressing second key
     setRubberKey(2, RUBBER_KEY_PRESSED);
@@ -81,10 +109,10 @@ int main() {
     advanceMockMillis(MIN_TIME_MS + ((MAX_TIME_MS - MIN_TIME_MS) / 2));
     setRubberKey(3, RUBBER_KEY_PRESSED);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x90);
-    assert(Serial.readWrittenByte() == 0x1D);
-    assert(Serial.readWrittenByte() == 0x40);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x90);
+    assert(Serial.read() == 0x1D);
+    assert(Serial.read() == 0x40);
 
     // pressing sustain pedal
     setSustainPedal(true);
@@ -96,15 +124,15 @@ int main() {
     setRubberKey(2, RUBBER_KEY_RELEASED);
     advanceMockMillis(MAX_TIME_MS);
     loop();
-    assert(Serial.getAvailableBytes() == 0);
+    assert(Serial.available() == 0);
 
     // releasing sustain pedal
     setSustainPedal(false);
     loop();
-    assert(Serial.getAvailableBytes() == 3);
-    assert(Serial.readWrittenByte() == 0x80);
-    assert(Serial.readWrittenByte() == 0x1D);
-    assert(Serial.readWrittenByte() == 0x00);
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0x80);
+    assert(Serial.read() == 0x1D);
+    assert(Serial.read() == 0x00);
 
-    printf("Tests OK\n");
+    Serial.println("Tests OK");
 }

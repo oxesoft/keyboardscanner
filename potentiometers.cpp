@@ -22,111 +22,81 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
 
-#define PITCHBEND_CENTER 8192
-#define PITCHBEND_DEADZONE 100
-const int POT_MIN = 200; // Adjustment based on actual minimum reading
-const int POT_MAX = 800; // Adjustment based on actual maximum reading
+/*
+    5V  ────┬────────────
+            │
+        [ POT ] ← linear 10 kΩ
+            │
+            └────── A0
+            │
+    GND ────┴────────────
 
-const int N_POTS = 3;                             // total number of pots (slide and rotary)
-const int POT_ARDUINO_PIN[N_POTS] = {A0, A1, A2}; // pins of each pot connected directly to the Arduino
-int potCState[N_POTS] = {0};                      // current status of the analog port
-int potPState[N_POTS] = {0};                      // previous state of the analog port
-int potVar = 0;                                   // variation between the value of the previous and current state of the analog port
-int midiCState[N_POTS] = {0};                     // Current status of midi value
-int midiPState[N_POTS] = {0};                     // Previous state of midi value
-const int TIMEOUT = 150;                          // amount of time the potentiometer will be read after exceeding the varThreshold
-const int varThreshold = 50;                      // threshold for the variation in the potentiometer signal
-boolean potMoving = true;                         // if the potentiometer is moving
-unsigned long PTime[N_POTS] = {0};                // previously stored time
-unsigned long timer[N_POTS] = {0};                // stores the time that has passed since the timer was reset
-boolean pit = false;
-boolean mod = false;
-byte cc = 1; // Lowest MIDI CC to use
+    TIPS:
+    - Use linear potentiometers (B-taper) of 10 kΩ
+    - Avoid logarithmic/audio (A-taper)
+    - For extra precision, add 100 nF from A0 to GND
+    - If this module is enabled and there is no potentiometers connected, connects the configured inputs to GND
+*/
+
+int analogRawValues[POTS_NUMBER] = {0}; // 10-bit ADC (0–1023)
+int midiValues[POTS_NUMBER] = {0};
+unsigned long lastReadingTime = 0;
+
+void initPotentiometers()
+{
+    for (int i = 0; i < POTS_NUMBER; i++)
+    {
+        if (POTS_TYPES[i] == POT_TYPE_PITCHBEND)
+        {
+            midiValues[i] = 8192;
+        }
+    }
+}
 
 void readPotentiometers()
 {
-    // Debug only
-    for (int i = 0; i < N_POTS; i++)
+    unsigned long currentTime = millis();
+    if (currentTime - lastReadingTime < POTS_RESOLUTION_MILISECONDS)
     {
-        // Serial.print(potCState[i]); Serial.print(" ");
-        Serial.print(midiCState[i]);
-        Serial.print(" ");
+        return;
     }
-    Serial.println();
-
-    for (int i = 0; i < N_POTS; i++)
+    for (int i = 0; i < POTS_NUMBER; i++)
     {
-        potCState[i] = analogRead(POT_ARDUINO_PIN[i]);
-
-        if (i == 0)
-        { // Modulation wheel
-            midiCState[i] = map(potCState[i], 450, 880, 0, 127);
-        }
-        else if (i == 1)
-        { // Pitchbend
-            // Apply filter to smooth reading
-            int rawValue = map(potCState[i], 215, 795, 0, 16383);
-            midiCState[i] = (midiCState[i] * 0.7) + (rawValue * 0.3);
-
-            // Implementa zona morta mais precisa
-            if (abs(midiCState[i] - 8192) < 100)
+        int raw = analogRead(POTS_ANALOG_PINS[i]);
+        if (POTS_TYPES[i] == POT_TYPE_PITCHBEND)
+        {
+            const int CENTER = 512;
+            int delta = raw - CENTER;
+            if (abs(delta) <= POTS_PB_CENTER_DEADZONE)
             {
-                midiCState[i] = 8192;
+                delta = 0;  // force perfect center
             }
+            byte status = (POTS_TYPES[i] & 0xFF00) >> 8;
+            int value = (delta << 4) + 8192; // scale to MIDI range (0–16383)
+            if (midiValues[i] == value)
+            {
+                continue;
+            }
+            midiValues[i] = value;
+            byte lsb = value & 0x7F;
+            byte msb = value >> 7;
+            sendMidiEvent(status, lsb, msb);
         }
-        else if (i == 2)
-        { // Volume
-            midiCState[i] = map(potCState[i], 0, 1023, 0, 127);
-        }
-
-        potVar = abs(potCState[i] - potPState[i]);
-
-        if (potVar > varThreshold)
+        else
         {
-            PTime[i] = millis();
-        }
-
-        timer[i] = millis() - PTime[i];
-        potMoving = (timer[i] < TIMEOUT);
-
-        if (potMoving && midiPState[i] != midiCState[i])
-        {
-            if (i == 0)
-            { // Modulation
-                sendMidiEvent(0xB0, cc + i, midiCState[i]);
-                mod = false;
+            int lastRaw = analogRawValues[i];
+            if (abs(raw - lastRaw) < POTS_THREASHOLD_VALUE)
+            {
+                continue;
             }
-            else if (i == 1)
-            { // Pitchbend
-                byte lsb = midiCState[i] & 0x7F;
-                byte msb = (midiCState[i] >> 7) & 0x7F;
-                sendMidiEvent(0xE0, lsb, msb);
-            }
-            else if (i == 2)
-            { // Volume
-                sendMidiEvent(0xB0, 7, midiCState[i]);
-            }
-
-            potPState[i] = potCState[i];
-            midiPState[i] = midiCState[i];
-        }
-
-        // Reset controls when stopped
-        if (!potMoving)
-        {
-            if (i == 1 && abs(midiCState[i] - 8192) < 100)
-            { // Pitchbend center
-                midiCState[i] = 8192;
-                sendMidiEvent(0xE0, 0, 64); // Exact center
-            }
-            else if (i == 0 && midiCState[i] < 10 && !mod)
-            { // Modulation reset
-                midiCState[i] = 0;
-                sendMidiEvent(0xB0, 1, 0);
-                mod = true;
-            }
+            analogRawValues[i] = raw;
+            byte status = (POTS_TYPES[i] & 0xFF00) >> 8;
+            byte cc     = POTS_TYPES[i] & 0x00FF;
+            byte value  = raw >> 3; // scale to MIDI range (0–127)
+            sendMidiEvent(status, cc, value);
         }
     }
+    lastReadingTime = currentTime;
 }
 
 #endif

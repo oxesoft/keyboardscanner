@@ -20,15 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.h"
 
-void setup() {
+void setup()
+{
     Serial.begin(SERIAL_SPEED);
     pinMode(13, OUTPUT);
     digitalWrite(13, LOW);
     initStates();
     initIOPins();
+#ifdef ENABLE_POTENTIOMETER_SUPPORT
+    initPotentiometers();
+#endif
 }
 
-void loop() {
+void loop()
+{
 #ifdef DEBUG_SCANS_PER_SECOND
     countCycles();
 #endif
