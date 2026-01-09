@@ -20,26 +20,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.h"
 
-void setup()
-{
-    Serial.begin(SERIAL_SPEED);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
-    initStates();
-    initIOPins();
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    initPotentiometers();
-#endif
-}
-
-void loop()
-{
 #ifdef DEBUG_SCANS_PER_SECOND
-    countCycles();
-#endif
-    scanMatrix();
-    updateStates();
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    readPotentiometers();
-#endif
+void countCycles()
+{
+    static unsigned long cycles = 0;
+    static unsigned long start = 0;
+    static unsigned long current = 0;
+    cycles++;
+    current = millis();
+    if (current - start >= 1000)
+    {
+        Serial.println(cycles);
+        cycles = 0;
+        start = current;
+    }
 }
+#endif
