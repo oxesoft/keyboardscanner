@@ -27,7 +27,23 @@ int main()
     setup();
     assert(Serial.available() == 0);
 
-#ifdef ENABLE_POTENTIOMETER_SUPPORT // please change config.h to have 1 pitch wheel potentiometer on pin A0
+#ifdef ENABLE_POTENTIOMETER_SUPPORT
+    // please change config.h with the following configuration
+    /*
+    #define ENABLE_POTENTIOMETER_SUPPORT
+    #define POTS_RESOLUTION_MILISECONDS   5
+    #define POTS_THREASHOLD_VALUE         8 // 1024 divided by 128
+    #define POTS_PB_CENTER_DEADZONE       4
+    #define POTS_NUMBER                   2
+    const int POTS_ANALOG_PINS[POTS_NUMBER] = {
+        A0,
+        A1
+    };
+    const int POTS_TYPES[POTS_NUMBER] = {
+        POT_TYPE_PITCHBEND,
+        POT_TYPE_MODWHEEL
+    };
+    */
     setPotentiometerValue(0, 512);
     // test rate control
     assert(getAnalogReadsCount() == 0);
@@ -44,7 +60,7 @@ int main()
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xE0);
-    assert(Serial.read() == 0x70);
+    assert(Serial.read() == 0x7F);
     assert(Serial.read() == 0x7F);
     // tests that a MIDI message is sent moving pith bend all the way down
     setPotentiometerValue(0, 0);
@@ -53,6 +69,30 @@ int main()
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xE0);
     assert(Serial.read() == 0x00);
+    assert(Serial.read() == 0x00);
+    // tests that a MIDI message is sent moving modulation wheel to the center position
+    setPotentiometerValue(1, 512);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
+    assert(Serial.read() == 0x40);
+    // tests that a MIDI message is sent moving modulation wheel all the way up
+    setPotentiometerValue(1, 1023);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
+    assert(Serial.read() == 0x7F);
+    // tests that a MIDI message is sent moving modulation wheel all the down
+    setPotentiometerValue(1, 0);
+    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
     assert(Serial.read() == 0x00);
 #endif
 

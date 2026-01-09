@@ -66,17 +66,24 @@ void readPotentiometers()
         if (POTS_TYPES[i] == POT_TYPE_PITCHBEND)
         {
             const int CENTER = 512;
-            int delta = raw - CENTER;
-            if (abs(delta) <= POTS_PB_CENTER_DEADZONE)
+            int value;
+            if (abs(raw - CENTER) <= POTS_PB_CENTER_DEADZONE)
             {
-                delta = 0;  // force perfect center
+                value = 8192;
             }
-            byte status = (POTS_TYPES[i] & 0xFF00) >> 8;
-            int value = (delta << 4) + 8192; // scale to MIDI range (0–16383)
+            else if (raw < CENTER)
+            {
+                value = map(raw, 0, CENTER - POTS_PB_CENTER_DEADZONE - 1, 0, 8191);
+            }
+            else
+            {
+                value = map(raw, CENTER + POTS_PB_CENTER_DEADZONE + 1, 1023, 8192, 16383);
+            }
             if (midiValues[i] == value)
             {
                 continue;
             }
+            byte status = (POTS_TYPES[i] & 0xFF00) >> 8;
             midiValues[i] = value;
             byte lsb = value & 0x7F;
             byte msb = value >> 7;

@@ -41,12 +41,14 @@ For reference, I've got these results at the time that I tested it:
 // #define POTS_RESOLUTION_MILISECONDS   5
 // #define POTS_THREASHOLD_VALUE         8 // 1024 divided by 128
 // #define POTS_PB_CENTER_DEADZONE       4
-// #define POTS_NUMBER                   1
+// #define POTS_NUMBER                   2
 // const int POTS_ANALOG_PINS[POTS_NUMBER] = {
-//     A0
+//     A0,
+//     A1
 // };
 // const int POTS_TYPES[POTS_NUMBER] = {
-//     POT_TYPE_PITCHBEND
+//     POT_TYPE_PITCHBEND,
+//     POT_TYPE_MODWHEEL
 // };
 
 #define SERIAL_SPEED 31250 // 115200 for hairless; 31250 for MOCO lufa
