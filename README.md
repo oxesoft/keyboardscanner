@@ -1,6 +1,6 @@
 # Moura's Keyboard Scanner
 
-Turn your broken (or unused) keyboard in a MIDI controller
+Turn your broken (or unused) keyboard into a MIDI controller
 
 This Arduino sketch was the one that I used to make the project demonstrated
 in [this](https://www.youtube.com/watch?v=z840N9P-T2k) video.
@@ -33,7 +33,7 @@ Normally it is a ribbon rubber with two contacts for each key that touch the boa
 since the key was pressed until it slopes the board completly. The code measure the difference, varying between
 2 and 120 ms, depending on the keyboard. It is transformed in a MIDI value from 0 to 127.
 
-## Diagram of one key
+## Diagram of one rubber key
 
 This scheme makes clear how to identify input and output pins. This has been the main question of guys on Youtube.
 I hope it helps:
