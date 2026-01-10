@@ -9,6 +9,10 @@
 #include <DIO2.h> // install the library DIO2
 #endif
 
+#if defined(TEST_MODE) || defined(DEBUG_SCANS_PER_SECOND) || defined(DEBUG_MIDI_MESSAGE) || defined (DEBUG_VELOCITY_TIMES)
+#include <stdio.h>
+#endif
+
 #define VELOCITY_CURVE_LINEAR    0
 #define VELOCITY_CURVE_CONVEX    1
 #define VELOCITY_CURVE_SATURATED 2

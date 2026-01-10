@@ -45,6 +45,9 @@ typedef unsigned char byte;
 #define LOW 0
 #define HIGH 1
 
+// Arduino built-in LED pin
+#define LED_BUILTIN 13
+
 // Arduino analog pins constants
 #define A0 0
 #define A1 1
@@ -63,14 +66,12 @@ typedef unsigned char byte;
 #define A14 14
 #define A15 15
 
-// DIO2 compatibility macros
-#define digitalWrite2 digitalWrite
-#define digitalRead2 digitalRead
+// Function declarations for DIO2 pin operations
+void pinMode2(int pin, int mode);
+void digitalWrite2(int pin, int value);
+int digitalRead2(int pin);
 
 // Function declarations for Arduino pin operations
-void pinMode(int pin, int mode);
-void digitalWrite(int pin, int value);
-int digitalRead(int pin);
 int analogRead(int pin);
 
 // Function declarations for timing operations

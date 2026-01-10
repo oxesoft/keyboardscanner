@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../globals.h"
-#include <stdio.h>
 #include <memory.h>
 
 // #define PRINT_SERIAL_WRITE
@@ -38,16 +37,16 @@ int analog_reads_counter = 0;
 static unsigned long mockMillis = 0;
 
 // Arduino pin operations implementations
-void pinMode(int pin, int mode)
+void pinMode2(int pin, int mode)
 {
 }
 
-void digitalWrite(int pin, int value)
+void digitalWrite2(int pin, int value)
 {
     output_pin = value == LOW ? pin : 0;
 }
 
-int digitalRead(int pin)
+int digitalRead2(int pin)
 {
     if (output_pin)
     {

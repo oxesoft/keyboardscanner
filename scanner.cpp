@@ -28,11 +28,11 @@ void initIOPins()
 {
     for (byte pin = 0; pin < (KEYS_NUMBER * 2); pin++)
     {
-        pinMode(output_pins[pin], OUTPUT);
-        pinMode(input_pins[pin], INPUT_PULLUP);
+        pinMode2(output_pins[pin], OUTPUT);
+        pinMode2(input_pins[pin], INPUT_PULLUP);
         matrix_signals[pin] = HIGH;
     }
-    pinMode(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
+    pinMode2(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
 
 }
 

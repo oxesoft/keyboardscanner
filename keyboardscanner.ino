@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void setup()
 {
     Serial.begin(SERIAL_SPEED);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
+    pinMode2(LED_BUILTIN, OUTPUT);
+    digitalWrite2(LED_BUILTIN, LOW);
     initStates();
     initIOPins();
 #ifdef ENABLE_POTENTIOMETER_SUPPORT

@@ -98,7 +98,6 @@ void updateStates()
                 if (state_index == 0 && !*signal)
                 {
                     *state = KEY_SUSTAINED;
-                    digitalWrite(13, HIGH);
                     break;
                 }
                 if (state_index == 1 && *signal)
