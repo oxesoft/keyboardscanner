@@ -35,13 +35,6 @@
 #define STR(x) STR_HELPER(x)
 #include STR(MODEL_HEADER_PATH)
 
-#define KEY_OFF                  0
-#define KEY_START                1
-#define KEY_ON                   2
-#define KEY_RELEASED             3
-#define KEY_SUSTAINED            4
-#define KEY_SUSTAINED_RESTART    5
-
 void initIOPins();
 #ifdef DEBUG_SCANS_PER_SECOND
 void countCycles();
@@ -49,6 +42,7 @@ void countCycles();
 void scanMatrix();
 void updateStates();
 void sendKeyEvent(byte status_byte, byte key_index, unsigned long time);
+void sendSustainPedalEvent(boolean pressed);
 void sendMidiEvent(byte status_byte, byte data1, byte data2);
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
 void initPotentiometers();

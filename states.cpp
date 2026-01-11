@@ -20,10 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.h"
 
+#define KEY_OFF                  0
+#define KEY_START                1
+#define KEY_ON                   2
+#define KEY_RELEASED             3
+
 boolean       matrix_signals[KEYS_NUMBER * 2] = {HIGH};
 byte          keys_state    [KEYS_NUMBER]     = {KEY_OFF};
 unsigned long keys_time     [KEYS_NUMBER]     = {0};
 byte          sustain_pedal_signal;
+byte          sustain_pedal_signal_previous = LOW;
 
 void updateStates()
 {
@@ -65,38 +71,8 @@ void updateStates()
             case KEY_RELEASED:
                 if (state_index == 0 && !*signal)
                 {
-                    if (sustain_pedal_signal)
-                    {
-                        *state = KEY_SUSTAINED;
-                        break;
-                    }
                     *state = KEY_OFF;
                     sendKeyEvent(0x80, key, millis() - *ktime);
-                }
-                break;
-            case KEY_SUSTAINED:
-                if (!sustain_pedal_signal)
-                {
-                    *state = KEY_OFF;
-                    sendKeyEvent(0x80, key, MAX_TIME_MS);
-                }
-                if (state_index == 0 && *signal)
-                {
-                    *state = KEY_SUSTAINED_RESTART;
-                    *ktime = millis();
-                }
-                break;
-            case KEY_SUSTAINED_RESTART:
-                if (state_index == 0 && !*signal)
-                {
-                    *state = KEY_SUSTAINED;
-                    break;
-                }
-                if (state_index == 1 && *signal)
-                {
-                    *state = KEY_ON;
-                    sendKeyEvent(0x80, key, MAX_TIME_MS);
-                    sendKeyEvent(0x90, key, millis() - *ktime);
                 }
                 break;
             }
@@ -105,4 +81,9 @@ void updateStates()
         state++;
         ktime++;
     }
+    if (sustain_pedal_signal_previous != sustain_pedal_signal)
+    {
+        sendSustainPedalEvent(sustain_pedal_signal);
+    }
+    sustain_pedal_signal_previous = sustain_pedal_signal;
 }

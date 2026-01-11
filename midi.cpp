@@ -75,6 +75,11 @@ void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
 #endif
 }
 
+void sendSustainPedalEvent(boolean pressed)
+{
+    sendMidiEvent(0xB0, 0x40, pressed ? 0x7F : 0x00);
+}
+
 void sendMidiEvent(byte status_byte, byte data1, byte data2)
 {
 #ifdef DEBUG_MIDI_MESSAGE

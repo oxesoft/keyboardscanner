@@ -104,6 +104,22 @@ int main()
     assert(Serial.read() == 0x00);
 #endif
 
+    // pressing sustain pedal
+    setSustainPedal(true);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x40);
+    assert(Serial.read() == 0x7F);
+
+    // releasing sustain pedal
+    setSustainPedal(false);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x40);
+    assert(Serial.read() == 0x00);
+
     int index = 0;
 
     // start pressing key
@@ -158,38 +174,6 @@ int main()
     index += 2;
     const unsigned long MEDIUM_VELOCITY = MIN_TIME_MS + ((MAX_TIME_MS - MIN_TIME_MS) / 2);
 
-    // start pressing key
-    setRubberKey(index, RUBBER_KEY_PRESSED);
-    loop();
-    // fully pressing key with medium velocity
-    advanceMockMillis(MEDIUM_VELOCITY);
-    setRubberKey(index + 1, RUBBER_KEY_PRESSED);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0x90);
-    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-    assert(Serial.read() == 0x40);
-
-    // pressing sustain pedal
-    setSustainPedal(true);
-
-    // start releasing key
-    setRubberKey(index + 1, RUBBER_KEY_RELEASED);
-    loop();
-    // fully releasing key with minimum velocity
-    setRubberKey(index, RUBBER_KEY_RELEASED);
-    advanceMockMillis(MAX_TIME_MS);
-    loop();
-    assert(Serial.available() == 0);
-
-    // releasing sustain pedal
-    setSustainPedal(false);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0x80);
-    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-    assert(Serial.read() == 0x00);
-
     while (index < KEYS_NUMBER * 2)
     {
         // start pressing next key
@@ -209,12 +193,12 @@ int main()
         loop();
         // fully releasing key with minimum velocity
         setRubberKey(index, RUBBER_KEY_RELEASED);
-        advanceMockMillis(MAX_TIME_MS);
+        advanceMockMillis(MEDIUM_VELOCITY);
         loop();
         assert(Serial.available() == 3);
         assert(Serial.read() == 0x80);
         assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-        assert(Serial.read() == 0x00);
+        assert(Serial.read() == 0x40);
 
         index += 2;
     }
