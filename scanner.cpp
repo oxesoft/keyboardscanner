@@ -18,34 +18,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define DEFINE_MODEL_IO_PINS
 #import "globals.h"
-
-boolean matrix_signals[KEYS_NUMBER * 2];
-byte sustain_pedal_signal;
+#define MODEL_PINS_DEF models/MODEL_NAME/pins.h
+extern boolean matrix_signals[KEYS_NUMBER * 2];
+extern byte    sustain_pedal_signal;
 
 void initIOPins()
 {
-    for (byte pin = 0; pin < (KEYS_NUMBER * 2); pin++)
-    {
-        pinMode2(output_pins[pin], OUTPUT);
-        pinMode2(input_pins[pin], INPUT_PULLUP);
-        matrix_signals[pin] = HIGH;
-    }
-    pinMode2(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
-
+    #define PINS(output_pin, input_pin) \
+    pinMode2f(output_pin, OUTPUT);      \
+    pinMode2f(input_pin, INPUT_PULLUP);
+    #include STR(MODEL_PINS_DEF)
+    #undef PINS
+    pinMode2f(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
 }
 
 void scanMatrix()
 {
     boolean *s = matrix_signals;
-    for (byte i = 0; i < KEYS_NUMBER * 2; i++)
-    {
-        byte output_pin = output_pins[i];
-        byte input_pin = input_pins[i];
-        digitalWrite2(output_pin, LOW);
-        *(s++) = !digitalRead2(input_pin);
-        digitalWrite2(output_pin, HIGH);
-    }
-    sustain_pedal_signal = digitalRead2(SUSTAIN_PEDAL_PIN);
+    #define PINS(output_pin, input_pin) \
+    digitalWrite2f(output_pin, LOW);    \
+    *(s++) = !digitalRead2f(input_pin); \
+    digitalWrite2f(output_pin, HIGH);
+    #include STR(MODEL_PINS_DEF)
+    #undef PINS
+    sustain_pedal_signal = digitalRead2f(SUSTAIN_PEDAL_PIN);
 }

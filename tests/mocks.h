@@ -36,14 +36,13 @@ typedef unsigned char byte;
 #define min(a,b) ((a)<(b)?(a):(b))
 #define map(value,fromLow,fromHigh,toLow,toHigh) (((value)-(fromLow))*((toHigh)-(toLow))/((fromHigh)-(fromLow))+(toLow))
 
-// Arduino pin mode constants
+// Arduino digital pin constants
 #define INPUT 0
 #define OUTPUT 1
 #define INPUT_PULLUP 2
-
-// Arduino digital pin states
 #define LOW 0
 #define HIGH 1
+#define NUM_DIGITAL_PINS 70
 
 // Arduino built-in LED pin
 #define LED_BUILTIN 13
@@ -66,10 +65,69 @@ typedef unsigned char byte;
 #define A14 14
 #define A15 15
 
+// DIO2 digital pin definitions
+#define DP0 0
+#define DP1 1
+#define DP2 2
+#define DP3 3
+#define DP4 4
+#define DP5 5
+#define DP6 6
+#define DP7 7
+#define DP8 8
+#define DP9 9
+#define DP10 10
+#define DP11 11
+#define DP12 12
+#define DP13 13
+#define DP14 14
+#define DP15 15
+#define DP16 16
+#define DP17 17
+#define DP18 18
+#define DP19 19
+#define DP20 20
+#define DP21 21
+#define DP22 22
+#define DP23 23
+#define DP24 24
+#define DP25 25
+#define DP26 26
+#define DP27 27
+#define DP28 28
+#define DP29 29
+#define DP30 30
+#define DP31 31
+#define DP32 32
+#define DP33 33
+#define DP34 34
+#define DP35 35
+#define DP36 36
+#define DP37 37
+#define DP38 38
+#define DP39 39
+#define DP40 40
+#define DP41 41
+#define DP42 42
+#define DP43 43
+#define DP44 44
+#define DP45 45
+#define DP46 46
+#define DP47 47
+#define DP48 48
+#define DP49 49
+#define DP50 50
+#define DP51 51
+#define DP52 52
+#define DP53 53
+
+// DIO2 dummy declaration
+#define Arduino_to_GPIO_pin(pin) (pin)
+
 // Function declarations for DIO2 pin operations
-void pinMode2(int pin, int mode);
-void digitalWrite2(int pin, int value);
-int digitalRead2(int pin);
+void pinMode2f(int pin, byte mode);
+void digitalWrite2f(int pin, int value);
+int digitalRead2f(int pin);
 
 // Function declarations for Arduino pin operations
 int analogRead(int pin);
@@ -83,6 +141,7 @@ void setRubberKey(int rubber_key, byte state);
 void setSustainPedal(bool pressed);
 void setPotentiometerValue(int index, int value);
 int getAnalogReadsCount();
+byte getPinMode(int i);
 
 // Arduino main function declarations
 void setup();

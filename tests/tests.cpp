@@ -21,10 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../globals.h"
 #include <assert.h>
 
-// please change config.h to include "models/kurzweil_sp76ii/model.h" and turn off velocity curve
+#define MODEL_PINS_DEF ../models/MODEL_NAME/pins.h
+
+// please change config.h to turn off velocity curve
 int main()
 {
     setup();
+    #define PINS(output_pin, input_pin)               \
+        assert(getPinMode(output_pin) == OUTPUT);     \
+        assert(getPinMode(input_pin ) == INPUT_PULLUP);
+    #include STR(MODEL_PINS_DEF)
+    #undef PINS
+    assert(getPinMode(SUSTAIN_PEDAL_PIN) == INPUT_PULLUP);
     assert(Serial.available() == 0);
 
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
@@ -96,72 +104,80 @@ int main()
     assert(Serial.read() == 0x00);
 #endif
 
-    // start pressing first key
-    setRubberKey(0, RUBBER_KEY_PRESSED);
+    int index = 0;
+
+    // start pressing key
+    setRubberKey(index, RUBBER_KEY_PRESSED);
     loop();
-    // fully immediate pressing first key
-    setRubberKey(1, RUBBER_KEY_PRESSED);
+    // fully immediate pressing key
+    setRubberKey(index + 1, RUBBER_KEY_PRESSED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x90);
-    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x7F);
 
-    // start releasing first key
-    setRubberKey(1, RUBBER_KEY_RELEASED);
+    // start releasing key
+    setRubberKey(index + 1, RUBBER_KEY_RELEASED);
     loop();
-    // fully pressing first key with maximum velocity
-    setRubberKey(0, RUBBER_KEY_RELEASED);
+    // fully pressing key with maximum velocity
+    setRubberKey(index, RUBBER_KEY_RELEASED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x80);
-    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x7F);
 
-    // start pressing first key
-    setRubberKey(0, RUBBER_KEY_PRESSED);
+    index += 2;
+    const unsigned long MINIMUM_VELOCITY = MAX_TIME_MS;
+
+    // start pressing key
+    setRubberKey(index, RUBBER_KEY_PRESSED);
     loop();
-    // fully pressing first key with minimum velocity
-    advanceMockMillis(MAX_TIME_MS);
-    setRubberKey(1, RUBBER_KEY_PRESSED);
+    // fully pressing key with minimum velocity
+    advanceMockMillis(MINIMUM_VELOCITY);
+    setRubberKey(index + 1, RUBBER_KEY_PRESSED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x90);
-    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x00);
 
-    // start releasing first key
-    setRubberKey(1, RUBBER_KEY_RELEASED);
+    // start releasing key
+    setRubberKey(index + 1, RUBBER_KEY_RELEASED);
     loop();
-    // fully releasing first key with minimum velocity
-    advanceMockMillis(MAX_TIME_MS);
-    setRubberKey(0, RUBBER_KEY_RELEASED);
+    // fully releasing key with minimum velocity
+    advanceMockMillis(MINIMUM_VELOCITY);
+    setRubberKey(index, RUBBER_KEY_RELEASED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x80);
-    assert(Serial.read() == 0x1C);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x00);
 
-    // start pressing second key
-    setRubberKey(2, RUBBER_KEY_PRESSED);
+    index += 2;
+    const unsigned long MEDIUM_VELOCITY = MIN_TIME_MS + ((MAX_TIME_MS - MIN_TIME_MS) / 2);
+
+    // start pressing key
+    setRubberKey(index, RUBBER_KEY_PRESSED);
     loop();
-    // fully pressing second key with medium velocity
-    advanceMockMillis(MIN_TIME_MS + ((MAX_TIME_MS - MIN_TIME_MS) / 2));
-    setRubberKey(3, RUBBER_KEY_PRESSED);
+    // fully pressing key with medium velocity
+    advanceMockMillis(MEDIUM_VELOCITY);
+    setRubberKey(index + 1, RUBBER_KEY_PRESSED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x90);
-    assert(Serial.read() == 0x1D);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x40);
 
     // pressing sustain pedal
     setSustainPedal(true);
 
-    // start releasing second key
-    setRubberKey(3, RUBBER_KEY_RELEASED);
+    // start releasing key
+    setRubberKey(index + 1, RUBBER_KEY_RELEASED);
     loop();
-    // fully releasing second key with minimum velocity
-    setRubberKey(2, RUBBER_KEY_RELEASED);
+    // fully releasing key with minimum velocity
+    setRubberKey(index, RUBBER_KEY_RELEASED);
     advanceMockMillis(MAX_TIME_MS);
     loop();
     assert(Serial.available() == 0);
@@ -171,8 +187,37 @@ int main()
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x80);
-    assert(Serial.read() == 0x1D);
+    assert(Serial.read() == (FIRST_KEY + (index >> 1)));
     assert(Serial.read() == 0x00);
+
+    while (index < KEYS_NUMBER * 2)
+    {
+        // start pressing next key
+        setRubberKey(index, RUBBER_KEY_PRESSED);
+        loop();
+        // fully pressing key with medium velocity
+        advanceMockMillis(MEDIUM_VELOCITY);
+        setRubberKey(index + 1, RUBBER_KEY_PRESSED);
+        loop();
+        assert(Serial.available() == 3);
+        assert(Serial.read() == 0x90);
+        assert(Serial.read() == (FIRST_KEY + (index >> 1)));
+        assert(Serial.read() == 0x40);
+
+        // start releasing key
+        setRubberKey(index + 1, RUBBER_KEY_RELEASED);
+        loop();
+        // fully releasing key with minimum velocity
+        setRubberKey(index, RUBBER_KEY_RELEASED);
+        advanceMockMillis(MAX_TIME_MS);
+        loop();
+        assert(Serial.available() == 3);
+        assert(Serial.read() == 0x80);
+        assert(Serial.read() == (FIRST_KEY + (index >> 1)));
+        assert(Serial.read() == 0x00);
+
+        index += 2;
+    }
 
     Serial.println("Tests OK");
 }

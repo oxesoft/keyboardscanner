@@ -30,6 +30,11 @@
 
 #include "config.h"
 
+#define MODEL_HEADER_PATH models/MODEL_NAME/model.h
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#include STR(MODEL_HEADER_PATH)
+
 #define KEY_OFF                  0
 #define KEY_START                1
 #define KEY_ON                   2
@@ -37,7 +42,6 @@
 #define KEY_SUSTAINED            4
 #define KEY_SUSTAINED_RESTART    5
 
-void initStates();
 void initIOPins();
 #ifdef DEBUG_SCANS_PER_SECOND
 void countCycles();
@@ -50,8 +54,5 @@ void sendMidiEvent(byte status_byte, byte data1, byte data2);
 void initPotentiometers();
 void readPotentiometers();
 #endif
-
-extern boolean matrix_signals[KEYS_NUMBER * 2];
-extern byte    sustain_pedal_signal;
 
 #endif

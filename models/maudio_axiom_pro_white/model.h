@@ -20,293 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define KEYS_NUMBER       61
 #define FIRST_KEY         36
-#define SUSTAIN_PEDAL_PIN 17
+#define SUSTAIN_PEDAL_PIN DP17
 #define MIN_TIME_MS       3   // Decrease to capture faster taps
 #define MAX_TIME_MS       150 // Increase for greater dynamic range
 
 // KEYBOARD MATRIX PIN DEFINITION
-#define PIN_A1 22
-#define PIN_A2 24
-#define PIN_A3 26
-#define PIN_A4 28
-#define PIN_A5 30
-#define PIN_A6 32
-#define PIN_A7 34
-#define PIN_A8 36
-#define PIN_A9 38
-#define PIN_A10 40
-#define PIN_A11 42
-#define PIN_A12 44
+#define PIN_A1  DP22
+#define PIN_A2  DP24
+#define PIN_A3  DP26
+#define PIN_A4  DP28
+#define PIN_A5  DP30
+#define PIN_A6  DP32
+#define PIN_A7  DP34
+#define PIN_A8  DP36
+#define PIN_A9  DP38
+#define PIN_A10 DP40
+#define PIN_A11 DP42
+#define PIN_A12 DP44
 
-#define PIN_B1 23
-#define PIN_B2 25
-#define PIN_B3 27
-#define PIN_B4 29
-#define PIN_B5 31
-#define PIN_B6 33
-#define PIN_B7 35
-#define PIN_B8 37
-#define PIN_B9 39
-#define PIN_B10 41
-#define PIN_B11 43
-
-#ifdef DEFINE_MODEL_IO_PINS
-byte output_pins[KEYS_NUMBER * 2] = {
-    PIN_B1,  //C0
-    PIN_B1,  //C0
-    PIN_B1,  //C#0
-    PIN_B1,  //C#0
-    PIN_B1,  // D0
-    PIN_B1,  // D0
-    PIN_B1,
-    PIN_B1,
-    PIN_B1,
-    PIN_B1,
-    PIN_B1,
-    PIN_B1,
-
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-    PIN_B2,
-
-    PIN_B3,  //C1
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-    PIN_B3,
-
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    PIN_B4,
-    ///////
-    PIN_B5,  //C2
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-    PIN_B5,
-
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-    PIN_B6,
-
-    PIN_B7,  //C3
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-    PIN_B7,
-
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-    PIN_B8,
-
-    PIN_B9,  //C4
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-    PIN_B9,
-
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-    PIN_B10,
-
-    PIN_B11,  //C5
-};
-
-byte input_pins[KEYS_NUMBER * 2] = {
-    PIN_A1,  //C0
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,  //C1
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,  //C2
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,  //C3
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,  //C4
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,
-    PIN_A2,
-    PIN_A3,
-    PIN_A4,
-    PIN_A5,
-    PIN_A6,
-    PIN_A7,
-    PIN_A8,
-    PIN_A9,
-    PIN_A10,
-    PIN_A11,
-    PIN_A12,
-    PIN_A1,  //C5
-    PIN_A2
-};
-#endif
+#define PIN_B1  DP23
+#define PIN_B2  DP25
+#define PIN_B3  DP27
+#define PIN_B4  DP29
+#define PIN_B5  DP31
+#define PIN_B6  DP33
+#define PIN_B7  DP35
+#define PIN_B8  DP37
+#define PIN_B9  DP39
+#define PIN_B10 DP41
+#define PIN_B11 DP43

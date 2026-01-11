@@ -20,18 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.h"
 
-byte          keys_state[KEYS_NUMBER];
-unsigned long keys_time[KEYS_NUMBER];
-
-void initStates()
-{
-    int i;
-    for (i = 0; i < KEYS_NUMBER; i++)
-    {
-        keys_state[i] = KEY_OFF;
-        keys_time[i] = 0;
-    }
-}
+boolean       matrix_signals[KEYS_NUMBER * 2] = {HIGH};
+byte          keys_state    [KEYS_NUMBER]     = {KEY_OFF};
+unsigned long keys_time     [KEYS_NUMBER]     = {0};
+byte          sustain_pedal_signal;
 
 void updateStates()
 {

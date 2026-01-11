@@ -23,9 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // #define PRINT_SERIAL_WRITE
 
-extern byte output_pins[KEYS_NUMBER * 2];
-extern byte input_pins[KEYS_NUMBER * 2];
+#define MODEL_PINS_DEF ../models/MODEL_NAME/pins.h
+
+byte io_pins[KEYS_NUMBER * 4] = {
+#define PINS(output_pin, input_pin) \
+    output_pin, \
+    input_pin,
+#include STR(MODEL_PINS_DEF)
+#undef PINS
+};
+
 byte rubber_keys[KEYS_NUMBER * 2] = {RUBBER_KEY_RELEASED};
+byte pin_modes[NUM_DIGITAL_PINS] = {INPUT};
 int output_pin;
 boolean sustain_pedal = LOW;
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
@@ -37,25 +46,26 @@ int analog_reads_counter = 0;
 static unsigned long mockMillis = 0;
 
 // Arduino pin operations implementations
-void pinMode2(int pin, int mode)
+void pinMode2f(int pin, byte mode)
 {
+    pin_modes[pin] = mode;
 }
 
-void digitalWrite2(int pin, int value)
+void digitalWrite2f(int pin, int value)
 {
     output_pin = value == LOW ? pin : 0;
 }
 
-int digitalRead2(int pin)
+int digitalRead2f(int pin)
 {
     if (output_pin)
     {
         int input_pin = pin;
-        for (int i; i < KEYS_NUMBER * 2; i++)
+        for (int i; i < KEYS_NUMBER * 4; i+=2)
         {
-            if (output_pins[i] == output_pin && input_pins[i] == input_pin)
+            if (io_pins[i] == output_pin && io_pins[i + 1] == input_pin)
             {
-                return rubber_keys[i] == RUBBER_KEY_PRESSED ? LOW : HIGH;
+                return rubber_keys[i >> 1] == RUBBER_KEY_PRESSED ? LOW : HIGH;
             }
         }
     }
@@ -78,7 +88,7 @@ int analogRead(int pin)
             return analog_pins[i];
         }
     }
-    printf("Unexpected analogRead(%d)\n", pin);
+    printf("Unexpected analogRead2f(%d)\n", pin);
     return 0;
 }
 #endif
@@ -103,6 +113,11 @@ void setRubberKey(int rubber_key, byte state)
 void setSustainPedal(bool pressed)
 {
     sustain_pedal = pressed == true ? HIGH : LOW;
+}
+
+byte getPinMode(int pin)
+{
+    return pin_modes[pin];
 }
 
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
