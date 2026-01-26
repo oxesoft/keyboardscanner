@@ -1,4 +1,4 @@
-#define MODEL_NAME maudio_keystation88 // change here your keyboard model
+#define MODEL_NAME maudio_keystation88ii // change here your keyboard model
 
 // #define DEBUG_SCANS_PER_SECOND
 /*
