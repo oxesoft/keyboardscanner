@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEY_ON                   2
 #define KEY_RELEASED             3
 
-boolean       matrix_signals[KEYS_NUMBER * 2] = {HIGH};
+boolean       matrix_signals[KEYS_NUMBER * 2] = {LOW};
 byte          keys_state    [KEYS_NUMBER]     = {KEY_OFF};
 unsigned long keys_time     [KEYS_NUMBER]     = {0};
 byte          sustain_pedal_signal;
@@ -43,33 +43,33 @@ void updateStates()
             switch (*state)
             {
             case KEY_OFF:
-                if (state_index == 0 && *signal)
+                if (state_index == 0 && *signal == HIGH)
                 {
                     *state = KEY_START;
                     *ktime = millis();
                 }
                 break;
             case KEY_START:
-                if (state_index == 0 && !*signal)
+                if (state_index == 0 && *signal == LOW)
                 {
                     *state = KEY_OFF;
                     break;
                 }
-                if (state_index == 1 && *signal)
+                if (state_index == 1 && *signal == HIGH)
                 {
                     *state = KEY_ON;
                     sendKeyEvent(0x90, key, millis() - *ktime);
                 }
                 break;
             case KEY_ON:
-                if (state_index == 1 && !*signal)
+                if (state_index == 1 && *signal == LOW)
                 {
                     *state = KEY_RELEASED;
                     *ktime = millis();
                 }
                 break;
             case KEY_RELEASED:
-                if (state_index == 0 && !*signal)
+                if (state_index == 0 && *signal == LOW)
                 {
                     *state = KEY_OFF;
                     sendKeyEvent(0x80, key, millis() - *ktime);

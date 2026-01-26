@@ -60,16 +60,19 @@ void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
     byte key = FIRST_KEY + key_index;
 
 #ifdef DEBUG_VELOCITY_TIMES
-    char debug_msg[32];
-    snprintf(
-        debug_msg,
-        sizeof(debug_msg),
-        "KEY:%02d TIME:%03lu VEL:%03d",
-        key_index,
-        time,
-        vel
-    );
-    Serial.println(debug_msg);
+    Serial.print("KEY_");
+    Serial.print(status_byte == 0x90 ? "ON " : "OFF");
+    Serial.print(":");
+    Serial.print(key_index < 10 ? "0" : "");
+    Serial.print(key_index);
+
+    Serial.print(" TIME:");
+    Serial.print(time < 100 ? (time < 10 ? "00" : "0") : "");
+    Serial.print(time);
+
+    Serial.print(" VEL:");
+    Serial.print(vel < 100 ? (vel < 10 ? "00" : "0") : "");
+    Serial.println(vel);
 #else
     sendMidiEvent(status_byte, key, vel);
 #endif
@@ -83,9 +86,11 @@ void sendSustainPedalEvent(boolean pressed)
 void sendMidiEvent(byte status_byte, byte data1, byte data2)
 {
 #ifdef DEBUG_MIDI_MESSAGE
-    char out[32];
-    snprintf(out, sizeof(out), "%02X %02X %02X", status_byte, data1, data2);
-    Serial.println(out);
+    Serial.print(status_byte, 16);
+    Serial.print(" ");
+    Serial.print(data1, 16);
+    Serial.print(" ");
+    Serial.println(data2, 16);
 #else
     Serial.write(status_byte);
     Serial.write(data1);

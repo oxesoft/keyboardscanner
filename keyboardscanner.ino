@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void setup()
 {
     Serial.begin(SERIAL_SPEED);
-    pinMode2f(Arduino_to_GPIO_pin(LED_BUILTIN), OUTPUT);
-    digitalWrite2f(LED_BUILTIN, LOW);
     initIOPins();
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
     initPotentiometers();

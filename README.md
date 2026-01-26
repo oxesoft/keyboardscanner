@@ -46,31 +46,15 @@ I hope it helps:
 2. Using a multimeter with the diode testing function selected, find out and understand the matrix, starting from the first key. Some keyboards have a logical pattern, some doesn't;
 3. Connect the ribbon pins **directly** to the Arduino Mega (because it has enough pins to connect any keyboard with velocity). You **dont't** need to change anything in the keyboard circuit board;
 4. Duplicate one of the existing models and change the pins in the model.h (output_pins + input_pins), uncomment DEBUG_MIDI_MESSAGE in globals.h and see the console output;
-5. If the MIDI messages looks OK, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge like the excelent [Hairless](https://projectgus.github.io/hairless-midiserial/);
-6. If everything goes well, consider turn you Arduino in a MIDI interface using [HIDUINO](https://github.com/ddiakopoulos/hiduino) or similar firmware.
+5. If the MIDI messages looks good, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge to test the keyboard with some softsynth to make sure that everything goes well;
+6. Optionally, consider turning your Arduino into a MIDI device using [HIDUINO](https://github.com/ddiakopoulos/hiduino), [mocoLUFA](https://github.com/kuwatay/mocolufa) or other similar firmware.
 7. Enjoy!
 
-## Converting an Arduino Mega into MIDI device
+## Converting an Arduino Mega into a MIDI device
 
-To convert the Arduino Mega into a MIDI device, I used the ability to modify the bootloader of the 16u2 chip.
-NOTE: only Arduino Megas/Unos with this chip will work with this procedure.
+To accomplish this we need to overwrite Arduino Mega's firmware with one that boots up as a regular MIDI (and allows us switch the boot mode to the default Arduino USB/serial, when needed). We just need to:
 
-- Using Homebrew I installed dfu-programmer
-
-  `brew install dfu-programmer`
-
-- Then download the dualMoco.hex file, which is a custom firmware that makes the 16u2 chip recognized as midi. It can be found in this project and also in [developers' github.](https://github.com/kuwatay/mocolufa/tree/master/HEX)
-- It is important that serial communications are set to 31250 in the code to work.
-- Connect the arduino mega and quickly short the first 2 pins with a jumper, then remove the jumper.
-  ![jumper mega](assets/mega.jpg)
-- Now in the terminal run the bootloader wipe
-  `dfu-programmer atmega16u2 erase`
-- Finally I installed dualMoco.hex
-  `dfu-programmer atmega16u2 flash /Users/emerson/Downloads/dualMoco.hex`
-- If you want to return to the original boot, repeat the previous steps but flash the original Mega/Uno bootloader.
-  `dfu-programmer atmega16u2 flash /Users/emerson/Downloads/Arduino-usbserial-mega.hex`
-- Perform a reset and remove and insert the ubs.
-  `dfu-programmer atmega16u2 reset`
-- Now the device will be recognized as a MIDI device.
-- The files are available in the /bootloader folder.
-- Make sure that SERIAL_SPEED in config.h is set to 31250.
+- Make sure that SERIAL_SPEED is set to 31250 in the code;
+- Download dualMoco.hex firmware from [here](https://github.com/kuwatay/mocolufa/tree/master/HEX);
+- Write the firmware using [this procedure](https://support.arduino.cc/hc/en-us/articles/4408887452434-Flash-the-USB-to-serial-firmware-for-UNO-Rev3-and-earlier-and-Mega-boards);
+- Now the device should be recognized as a regular MIDI device.

@@ -1,7 +1,7 @@
 test: compile run clean
 
 compile:
-	@gcc -o keyboardscanner -g -D TEST_MODE -x c++ *.cpp ../keyboardscanner.ino ../*.cpp
+	@gcc -o keyboardscanner -g -I . -x c++ *.cpp ../keyboardscanner.ino ../*.cpp
 run:
 	@./keyboardscanner
 debug:

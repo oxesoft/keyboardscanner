@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../globals.h"
+#include "mocks.h"
 #include <assert.h>
 
 #define MODEL_PINS_DEF ../models/MODEL_NAME/pins.h

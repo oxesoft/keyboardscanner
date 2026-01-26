@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../globals.h"
+#include "mocks.h"
 #include <memory.h>
+#include <stdio.h>
 
 // #define PRINT_SERIAL_WRITE
 
@@ -46,17 +48,17 @@ int analog_reads_counter = 0;
 static unsigned long mockMillis = 0;
 
 // Arduino pin operations implementations
-void pinMode2f(int pin, byte mode)
+void pinMode2(int pin, byte mode)
 {
     pin_modes[pin] = mode;
 }
 
-void digitalWrite2f(int pin, int value)
+void digitalWrite2(int pin, int value)
 {
     output_pin = value == LOW ? pin : 0;
 }
 
-int digitalRead2f(int pin)
+int digitalRead2(int pin)
 {
     if (output_pin)
     {
@@ -88,7 +90,7 @@ int analogRead(int pin)
             return analog_pins[i];
         }
     }
-    printf("Unexpected analogRead2f(%d)\n", pin);
+    printf("Unexpected analogRead(%d)\n", pin);
     return 0;
 }
 #endif
@@ -140,6 +142,26 @@ void SerialMock::begin(unsigned long baud)
     this->current_position = 0;
 }
 
+// Helper function to print binary representation
+static void printBinary(unsigned long value, bool negative = false)
+{
+    if (negative) printf("-");
+    if (value == 0) {
+        printf("0");
+        return;
+    }
+    
+    char buffer[65];
+    int i = 0;
+    while (value > 0) {
+        buffer[i++] = (value % 2) + '0';
+        value /= 2;
+    }
+    for (int j = i - 1; j >= 0; j--) {
+        printf("%c", buffer[j]);
+    }
+}
+
 void SerialMock::print(const char* str)
 {
     printf("%s", str);
@@ -150,6 +172,61 @@ void SerialMock::print(int value)
     printf("%d", value);
 }
 
+void SerialMock::print(int value, int base)
+{
+    switch (base) {
+        case 2:  printBinary(value < 0 ? -value : value, value < 0); break;
+        case 8:  printf("%o", value); break;
+        case 10: printf("%d", value); break;
+        case 16: printf("%x", value); break;
+        default: printf("%d", value); break;
+    }
+}
+
+void SerialMock::print(unsigned int value, int base)
+{
+    switch (base) {
+        case 2:  printBinary(value); break;
+        case 8:  printf("%o", value); break;
+        case 10: printf("%u", value); break;
+        case 16: printf("%x", value); break;
+        default: printf("%u", value); break;
+    }
+}
+
+void SerialMock::print(long value, int base)
+{
+    switch (base) {
+        case 2:  printBinary(value < 0 ? -value : value, value < 0); break;
+        case 8:  printf("%lo", value); break;
+        case 10: printf("%ld", value); break;
+        case 16: printf("%lx", value); break;
+        default: printf("%ld", value); break;
+    }
+}
+
+void SerialMock::print(unsigned long value, int base)
+{
+    switch (base) {
+        case 2:  printBinary(value); break;
+        case 8:  printf("%lo", value); break;
+        case 10: printf("%lu", value); break;
+        case 16: printf("%lx", value); break;
+        default: printf("%lu", value); break;
+    }
+}
+
+void SerialMock::print(unsigned char value, int base)
+{
+    switch (base) {
+        case 2:  printBinary(value); break;
+        case 8:  printf("%o", value); break;
+        case 10: printf("%u", value); break;
+        case 16: printf("%x", value); break;
+        default: printf("%u", value); break;
+    }
+}
+
 void SerialMock::println(const char* str)
 {
     printf("%s\n", str);
@@ -158,6 +235,36 @@ void SerialMock::println(const char* str)
 void SerialMock::println(int value)
 {
     printf("%d\n", value);
+}
+
+void SerialMock::println(int value, int base)
+{
+    print(value, base);
+    printf("\n");
+}
+
+void SerialMock::println(unsigned int value, int base)
+{
+    print(value, base);
+    printf("\n");
+}
+
+void SerialMock::println(long value, int base)
+{
+    print(value, base);
+    printf("\n");
+}
+
+void SerialMock::println(unsigned long value, int base)
+{
+    print(value, base);
+    printf("\n");
+}
+
+void SerialMock::println(unsigned char value, int base)
+{
+    print(value, base);
+    printf("\n");
 }
 
 void SerialMock::write(byte byte)

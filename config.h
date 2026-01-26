@@ -1,12 +1,11 @@
-#define MODEL_NAME maudio_axiom_pro_white // change here your keyboard model
+#define MODEL_NAME maudio_keystation88 // change here your keyboard model
 
 // #define DEBUG_SCANS_PER_SECOND
 /*
 For reference, I've got these results at the time that I tested it for 61 keys:
  426 cyles per second (2,35ms per cycle) using standard digitalWrite/digitalRead
  896 cyles per second (1,11ms per cycle) using DIO2 digitalWrite2/digitalRead2
-1065 cyles per second (0,94ms per cycle) using DIO2 digitalWrite2/digitalRead2 with static variables
-2115 cyles per second (0,47ms per cycle) using DIO2 digitalWrite2f/digitalRead2f with static variables
+1185 cyles per second (0,94ms per cycle) using DIO2 digitalWrite2/digitalRead2 with static variables
 */
 
 // Uncoment the next line to get text midi message at output

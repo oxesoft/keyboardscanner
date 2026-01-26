@@ -22,25 +22,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MODEL_PINS_DEF models/MODEL_NAME/pins.h
 extern boolean matrix_signals[KEYS_NUMBER * 2];
 extern byte    sustain_pedal_signal;
+#include <DIO2.h> // install the library DIO2
 
 void initIOPins()
 {
+    pinMode2(LED_BUILTIN, OUTPUT);
+    digitalWrite2(LED_BUILTIN, LOW);
     #define PINS(output_pin, input_pin) \
-    pinMode2f(output_pin, OUTPUT);      \
-    pinMode2f(input_pin, INPUT_PULLUP);
+    pinMode2(output_pin, OUTPUT); \
+    pinMode2(input_pin, INPUT_PULLUP);
     #include STR(MODEL_PINS_DEF)
     #undef PINS
-    pinMode2f(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
+    pinMode2(SUSTAIN_PEDAL_PIN, INPUT_PULLUP);
 }
 
 void scanMatrix()
 {
     boolean *s = matrix_signals;
     #define PINS(output_pin, input_pin) \
-    digitalWrite2f(output_pin, LOW);    \
-    *(s++) = !digitalRead2f(input_pin); \
-    digitalWrite2f(output_pin, HIGH);
+    digitalWrite2(output_pin, LOW); \
+    *(s++) = digitalRead2(input_pin) == LOW ? HIGH : LOW; \
+    digitalWrite2(output_pin, HIGH);
     #include STR(MODEL_PINS_DEF)
     #undef PINS
-    sustain_pedal_signal = digitalRead2f(SUSTAIN_PEDAL_PIN);
+    sustain_pedal_signal = digitalRead2(SUSTAIN_PEDAL_PIN);
 }
