@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEYS_NUMBER       61
 #define FIRST_KEY         36
 #define SUSTAIN_PEDAL_PIN 17
-#define MIN_TIME_MS       3   // Decrease to capture faster taps
-#define MAX_TIME_MS       150 // Increase for greater dynamic range
+#define MIN_TIME_US       3000
+#define MAX_TIME_US       25000
 
 // KEYBOARD MATRIX PIN DEFINITION
 #define PIN_A1  22

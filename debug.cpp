@@ -27,8 +27,8 @@ void countCycles()
     static unsigned long start = 0;
     static unsigned long current = 0;
     cycles++;
-    current = millis();
-    if (current - start >= 1000)
+    current = micros();
+    if (current - start >= 1000000)
     {
         Serial.println(cycles);
         cycles = 0;

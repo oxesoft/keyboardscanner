@@ -55,8 +55,8 @@ void initPotentiometers()
 
 void readPotentiometers()
 {
-    unsigned long currentTime = millis();
-    if (currentTime - lastReadingTime < POTS_RESOLUTION_MILISECONDS)
+    unsigned long currentTime = micros();
+    if (currentTime - lastReadingTime < POTS_RESOLUTION_MICROSECONDS)
     {
         return;
     }
@@ -92,7 +92,7 @@ void readPotentiometers()
         else
         {
             int lastRaw = analogRawValues[i];
-            if (abs(raw - lastRaw) < POTS_THREASHOLD_VALUE)
+            if (abs(raw - lastRaw) < POTS_THRESHOLD_VALUE)
             {
                 continue;
             }

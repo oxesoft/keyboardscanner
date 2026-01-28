@@ -29,7 +29,7 @@ boolean       matrix_signals[KEYS_NUMBER * 2] = {LOW};
 byte          keys_state    [KEYS_NUMBER]     = {KEY_OFF};
 unsigned long keys_time     [KEYS_NUMBER]     = {0};
 byte          sustain_pedal_signal;
-byte          sustain_pedal_signal_previous = LOW;
+byte          sustain_pedal_signal_previous = HIGH;
 
 void updateStates()
 {
@@ -46,7 +46,7 @@ void updateStates()
                 if (state_index == 0 && *signal == HIGH)
                 {
                     *state = KEY_START;
-                    *ktime = millis();
+                    *ktime = micros();
                 }
                 break;
             case KEY_START:
@@ -58,21 +58,21 @@ void updateStates()
                 if (state_index == 1 && *signal == HIGH)
                 {
                     *state = KEY_ON;
-                    sendKeyEvent(0x90, key, millis() - *ktime);
+                    sendKeyEvent(0x90, key, micros() - *ktime);
                 }
                 break;
             case KEY_ON:
                 if (state_index == 1 && *signal == LOW)
                 {
                     *state = KEY_RELEASED;
-                    *ktime = millis();
+                    *ktime = micros();
                 }
                 break;
             case KEY_RELEASED:
                 if (state_index == 0 && *signal == LOW)
                 {
                     *state = KEY_OFF;
-                    sendKeyEvent(0x80, key, millis() - *ktime);
+                    sendKeyEvent(0x80, key, micros() - *ktime);
                 }
                 break;
             }
@@ -83,7 +83,7 @@ void updateStates()
     }
     if (sustain_pedal_signal_previous != sustain_pedal_signal)
     {
-        sendSustainPedalEvent(sustain_pedal_signal);
+        sendSustainPedalEvent(sustain_pedal_signal == LOW);
     }
     sustain_pedal_signal_previous = sustain_pedal_signal;
 }

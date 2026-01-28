@@ -11,14 +11,8 @@ For reference, I've got these results at the time that I tested it for 61 keys:
 // Uncoment the next line to get text midi message at output
 // #define DEBUG_MIDI_MESSAGE
 
-// Enables debug mode to check MIN_TIME_MS and MAX_TIME_MS values
+// Enables debug mode to check MIN_TIME_US and MAX_TIME_US values
 // #define DEBUG_VELOCITY_TIMES
-
-// Uncomment for using one of the available velocity curves
-// #define VELOCITY_CURVE VELOCITY_CURVE_LINEAR
-// #define VELOCITY_CURVE VELOCITY_CURVE_CONVEX
-// #define VELOCITY_CURVE VELOCITY_CURVE_SATURATED
-// #define VELOCITY_CURVE VELOCITY_CURVE_CONCAVE
 
 // Cheap keyboards often has the black keys softer or harder than the white ones
 // Uncomment the two next lines to allow a soft correction
@@ -38,8 +32,8 @@ For reference, I've got these results at the time that I tested it for 61 keys:
 
 // Uncoment the following lines to use potentiometers (pitch bend, modulation wheel, knobs and sliders)
 // #define ENABLE_POTENTIOMETER_SUPPORT
-// #define POTS_RESOLUTION_MILISECONDS   5
-// #define POTS_THREASHOLD_VALUE         8 // 1024 divided by 128
+// #define POTS_RESOLUTION_MICROSECONDS  5000
+// #define POTS_THRESHOLD_VALUE          8 // 1024 divided by 128
 // #define POTS_PB_CENTER_DEADZONE       4
 // #define POTS_NUMBER                   2
 // const int POTS_ANALOG_PINS[POTS_NUMBER] = {

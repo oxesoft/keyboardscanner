@@ -38,14 +38,14 @@ byte io_pins[KEYS_NUMBER * 4] = {
 byte rubber_keys[KEYS_NUMBER * 2] = {RUBBER_KEY_RELEASED};
 byte pin_modes[NUM_DIGITAL_PINS] = {INPUT};
 int output_pin;
-boolean sustain_pedal = LOW;
+boolean sustain_pedal = HIGH;
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
 int analog_pins[16] = {0};
 int analog_reads_counter = 0;
 #endif
 
 // Static variable for mock timing
-static unsigned long mockMillis = 0;
+static unsigned long mockMicros = 0;
 
 // Arduino pin operations implementations
 void pinMode2(int pin, byte mode)
@@ -96,15 +96,15 @@ int analogRead(int pin)
 #endif
 
 // Timing functions implementation
-unsigned long millis()
+unsigned long micros()
 {
-    return mockMillis;
+    return mockMicros;
 }
 
 // Helper functions for mock control
-void advanceMockMillis(unsigned long ms)
+void advanceMockMicros(unsigned long us)
 {
-    mockMillis += ms;
+    mockMicros += us;
 }
 
 void setRubberKey(int rubber_key, byte state)
@@ -114,7 +114,7 @@ void setRubberKey(int rubber_key, byte state)
 
 void setSustainPedal(bool pressed)
 {
-    sustain_pedal = pressed == true ? HIGH : LOW;
+    sustain_pedal = pressed == true ? LOW : HIGH;
 }
 
 byte getPinMode(int pin)

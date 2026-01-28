@@ -4,11 +4,6 @@
 
 #include <Arduino.h>
 
-#define VELOCITY_CURVE_LINEAR    0
-#define VELOCITY_CURVE_CONVEX    1
-#define VELOCITY_CURVE_SATURATED 2
-#define VELOCITY_CURVE_CONCAVE   3
-
 #define POT_TYPE_PITCHBEND       0xE000
 #define POT_TYPE_MODWHEEL        0xB001
 #define POT_TYPE_VOLUME          0xB007

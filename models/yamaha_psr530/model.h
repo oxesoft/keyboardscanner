@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEYS_NUMBER       61
 #define FIRST_KEY         36
 #define SUSTAIN_PEDAL_PIN 21
-#define MIN_TIME_MS       3
-#define MAX_TIME_MS       51
+#define MIN_TIME_US       3000
+#define MAX_TIME_US       25000
 
 #define PIN_A1  33
 #define PIN_A2  32

@@ -55,7 +55,7 @@ typedef unsigned char byte;
 
 int analogRead(int pin);
 
-unsigned long millis();
+unsigned long micros();
 
 void setup();
 void loop();

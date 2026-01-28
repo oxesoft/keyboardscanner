@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RUBBER_KEY_RELEASED 1
 #define RUBBER_KEY_PRESSED  2
 
-void advanceMockMillis(unsigned long ms);
+void advanceMockMicros(unsigned long ms);
 void setRubberKey(int rubber_key, byte state);
 void setSustainPedal(bool pressed);
 void setPotentiometerValue(int index, int value);

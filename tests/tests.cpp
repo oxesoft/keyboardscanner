@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../globals.h"
+#include "../velocity.h"
 #include "mocks.h"
 #include <assert.h>
 
@@ -40,8 +41,8 @@ int main()
     // please change config.h with the following configuration
     /*
     #define ENABLE_POTENTIOMETER_SUPPORT
-    #define POTS_RESOLUTION_MILISECONDS   5
-    #define POTS_THREASHOLD_VALUE         8 // 1024 divided by 128
+    #define POTS_RESOLUTION_MICROSECONDS  5000
+    #define POTS_THRESHOLD_VALUE          8 // 1024 divided by 128
     #define POTS_PB_CENTER_DEADZONE       4
     #define POTS_NUMBER                   2
     const int POTS_ANALOG_PINS[POTS_NUMBER] = {
@@ -56,16 +57,16 @@ int main()
     setPotentiometerValue(0, 512);
     // test rate control
     assert(getAnalogReadsCount() == 0);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(getAnalogReadsCount() == POTS_NUMBER);
     // test that nothing happens with pitch bend at center position (no bend)
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 0);
     // tests that a MIDI message is sent moving pith bend all the way up
     setPotentiometerValue(0, 1023);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xE0);
@@ -73,7 +74,7 @@ int main()
     assert(Serial.read() == 0x7F);
     // tests that a MIDI message is sent moving pith bend all the way down
     setPotentiometerValue(0, 0);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xE0);
@@ -81,7 +82,7 @@ int main()
     assert(Serial.read() == 0x00);
     // tests that a MIDI message is sent moving modulation wheel to the center position
     setPotentiometerValue(1, 512);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xB0);
@@ -89,7 +90,7 @@ int main()
     assert(Serial.read() == 0x40);
     // tests that a MIDI message is sent moving modulation wheel all the way up
     setPotentiometerValue(1, 1023);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xB0);
@@ -97,7 +98,7 @@ int main()
     assert(Serial.read() == 0x7F);
     // tests that a MIDI message is sent moving modulation wheel all the down
     setPotentiometerValue(1, 0);
-    advanceMockMillis(POTS_RESOLUTION_MILISECONDS);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0xB0);
@@ -146,34 +147,34 @@ int main()
     assert(Serial.read() == 0x7F);
 
     index += 2;
-    const unsigned long MINIMUM_VELOCITY = MAX_TIME_MS;
+    const unsigned long MINIMUM_VELOCITY_MICROSECONDS = MAX_TIME_US;
 
     // start pressing key
     setRubberKey(index, RUBBER_KEY_PRESSED);
     loop();
     // fully pressing key with minimum velocity
-    advanceMockMillis(MINIMUM_VELOCITY);
+    advanceMockMicros(MINIMUM_VELOCITY_MICROSECONDS);
     setRubberKey(index + 1, RUBBER_KEY_PRESSED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x90);
     assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-    assert(Serial.read() == 0x00);
+    assert(Serial.read() == VELOCITY_CURVE[0]);
 
     // start releasing key
     setRubberKey(index + 1, RUBBER_KEY_RELEASED);
     loop();
     // fully releasing key with minimum velocity
-    advanceMockMillis(MINIMUM_VELOCITY);
+    advanceMockMicros(MINIMUM_VELOCITY_MICROSECONDS);
     setRubberKey(index, RUBBER_KEY_RELEASED);
     loop();
     assert(Serial.available() == 3);
     assert(Serial.read() == 0x80);
     assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-    assert(Serial.read() == 0x00);
+    assert(Serial.read() == VELOCITY_CURVE[0]);
 
     index += 2;
-    const unsigned long MEDIUM_VELOCITY = MIN_TIME_MS + ((MAX_TIME_MS - MIN_TIME_MS) / 2);
+    const unsigned long MEDIUM_VELOCITY_MICROSECONDS = MIN_TIME_US + ((MAX_TIME_US - MIN_TIME_US) / 2);
 
     while (index < KEYS_NUMBER * 2)
     {
@@ -181,25 +182,25 @@ int main()
         setRubberKey(index, RUBBER_KEY_PRESSED);
         loop();
         // fully pressing key with medium velocity
-        advanceMockMillis(MEDIUM_VELOCITY);
+        advanceMockMicros(MEDIUM_VELOCITY_MICROSECONDS);
         setRubberKey(index + 1, RUBBER_KEY_PRESSED);
         loop();
         assert(Serial.available() == 3);
         assert(Serial.read() == 0x90);
         assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-        assert(Serial.read() == 0x40);
+        assert(Serial.read() == VELOCITY_CURVE[64]);
 
         // start releasing key
         setRubberKey(index + 1, RUBBER_KEY_RELEASED);
         loop();
-        // fully releasing key with minimum velocity
+        // fully releasing key with medium velocity
         setRubberKey(index, RUBBER_KEY_RELEASED);
-        advanceMockMillis(MEDIUM_VELOCITY);
+        advanceMockMicros(MEDIUM_VELOCITY_MICROSECONDS);
         loop();
         assert(Serial.available() == 3);
         assert(Serial.read() == 0x80);
         assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-        assert(Serial.read() == 0x40);
+        assert(Serial.read() == VELOCITY_CURVE[64]);
 
         index += 2;
     }

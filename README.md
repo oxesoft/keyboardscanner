@@ -46,7 +46,7 @@ I hope it helps:
 2. Using a multimeter with the diode testing function selected, find out and understand the matrix, starting from the first key. Some keyboards have a logical pattern, some doesn't;
 3. Connect the ribbon pins **directly** to the Arduino Mega (because it has enough pins to connect any keyboard with velocity). You **dont't** need to change anything in the keyboard circuit board;
 4. Duplicate one of the existing models and change the pins in the model.h (output_pins + input_pins), uncomment DEBUG_MIDI_MESSAGE in globals.h and see the console output;
-5. If the MIDI messages looks good, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge to test the keyboard with some softsynth to make sure that everything goes well;
+5. If the MIDI messages looks good, comment DEBUG_MIDI_MESSAGE back and use some Serial<->MIDI Bridge (I use [serialmidi](https://github.com/raspy135/serialmidi) on macOS) to test the keyboard with some softsynth to make sure that everything goes well;
 6. Optionally, consider turning your Arduino into a MIDI device using [HIDUINO](https://github.com/ddiakopoulos/hiduino), [mocoLUFA](https://github.com/kuwatay/mocolufa) or other similar firmware.
 7. Enjoy!
 
