@@ -63,7 +63,7 @@ int digitalRead2(int pin)
     if (output_pin)
     {
         int input_pin = pin;
-        for (int i; i < KEYS_NUMBER * 4; i+=2)
+        for (int i = 0; i < KEYS_NUMBER * 4; i+=2)
         {
             if (io_pins[i] == output_pin && io_pins[i + 1] == input_pin)
             {
@@ -75,7 +75,7 @@ int digitalRead2(int pin)
     {
         return sustain_pedal;
     }
-    printf("Unexpected digitalRead(%d)\n", pin);
+    printf("Unexpected digitalRead2(%d)\n", pin);
     return LOW;
 }
 

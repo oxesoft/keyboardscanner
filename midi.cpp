@@ -25,21 +25,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SIZEOF_VELOCITY_CURVE 128
 static_assert(sizeof(VELOCITY_CURVE) == SIZEOF_VELOCITY_CURVE, "Invalid velocity curve");
 
+bool isBlack(byte note) {
+    switch (note % 12) {
+        case 1:
+        case 3:
+        case 6:
+        case 8:
+        case 10:
+            return true;
+        default:
+            return false;
+    }
+}
+
 void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
 {
     unsigned long t = constrain(time, MIN_TIME_US, MAX_TIME_US);
     t -= MIN_TIME_US;
 
-#ifdef BLACK_KEYS_CORRECTION
-    if (black_keys[key_index])
-    {
-        t = (t * BLACK_KEYS_MULTIPLIER) >> 7;
-    }
-#endif
     unsigned long linear_velocity = 127 - ((t * 127) / (MAX_TIME_US - MIN_TIME_US));
     byte vel = VELOCITY_CURVE[linear_velocity];
     byte key = FIRST_KEY + key_index;
 
+#ifdef BLACK_KEYS_VELOCITY_MULTIPLIER
+    if (isBlack(key))
+    {
+        vel = (byte)(((int)vel * BLACK_KEYS_VELOCITY_MULTIPLIER) >> 7);
+    }
+#endif
 #ifdef DEBUG_VELOCITY_TIMES
     Serial.print("KEY_");
     Serial.print(status_byte == 0x90 ? "ON " : "OFF");
