@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FIRST_KEY         21
 #define SUSTAIN_PEDAL_PIN 14
 #define MIN_TIME_US       2500
-#define MAX_TIME_US       22000
+#define MAX_TIME_US       15000
 
 // Board A
 #define IN_A_00 39
