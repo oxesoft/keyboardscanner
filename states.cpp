@@ -31,55 +31,56 @@ unsigned long keys_time     [KEYS_NUMBER]     = {0};
 byte          sustain_pedal_signal;
 byte          sustain_pedal_signal_previous = HIGH;
 
+void handle_key(byte key, boolean upper, boolean lower)
+{
+    switch (keys_state[key])
+    {
+    case KEY_OFF:
+        if (upper)
+        {
+            keys_state[key] = KEY_START;
+            keys_time [key] = micros();
+        }
+        break;
+    case KEY_START:
+        if (!upper)
+        {
+            keys_state[key] = KEY_OFF;
+            break;
+        }
+        if (lower)
+        {
+            keys_state[key] = KEY_ON;
+            unsigned long time = micros() - keys_time[key];
+            sendKeyEvent(0x90, key, time);
+        }
+        break;
+    case KEY_ON:
+        if (!lower)
+        {
+            keys_state[key] = KEY_RELEASED;
+            keys_time [key] = micros();
+        }
+        break;
+    case KEY_RELEASED:
+        if (!upper)
+        {
+            keys_state[key] = KEY_OFF;
+            unsigned long time = micros() - keys_time[key];
+            sendKeyEvent(0x80, key, time);
+        }
+        break;
+    }
+}
+
 void updateStates()
 {
-    byte          *state  = keys_state;
-    unsigned long *ktime  = keys_time;
-    boolean       *signal = matrix_signals;
+    boolean *signal = matrix_signals;
     for (byte key = 0; key < KEYS_NUMBER; key++)
     {
-        for (byte state_index = 0; state_index < 2; state_index++)
-        {
-            switch (*state)
-            {
-            case KEY_OFF:
-                if (state_index == 0 && *signal == HIGH)
-                {
-                    *state = KEY_START;
-                    *ktime = micros();
-                }
-                break;
-            case KEY_START:
-                if (state_index == 0 && *signal == LOW)
-                {
-                    *state = KEY_OFF;
-                    break;
-                }
-                if (state_index == 1 && *signal == HIGH)
-                {
-                    *state = KEY_ON;
-                    sendKeyEvent(0x90, key, micros() - *ktime);
-                }
-                break;
-            case KEY_ON:
-                if (state_index == 1 && *signal == LOW)
-                {
-                    *state = KEY_RELEASED;
-                    *ktime = micros();
-                }
-                break;
-            case KEY_RELEASED:
-                if (state_index == 0 && *signal == LOW)
-                {
-                    *state = KEY_OFF;
-                    sendKeyEvent(0x80, key, micros() - *ktime);
-                }
-                break;
-            }
-            signal++;
-        }
-        state++;
-        ktime++;
+        boolean upper = *(signal++);
+        boolean lower = *(signal++);
+        handle_key(key, upper, lower);
     }
     if (sustain_pedal_signal_previous != sustain_pedal_signal)
     {
