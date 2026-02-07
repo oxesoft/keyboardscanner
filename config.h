@@ -11,7 +11,7 @@ For reference, I've got these results at the time that I tested it for 61 keys a
 // Uncoment the next line if you have connected the matrix columns mapped to Arduino's PORTs
 // It requiers modifying scanner.cpp code to match your PORTs mapping
 // See https://devboards.info/boards/arduino-mega2560-rev3
-// The gain on scans per second (Hz) is around 5 times compared to the random pin mapping
+// The gain on scans per second (Hz) is around 7 times compared to the random pin mapping
 // #define DIRECT_PORTS_READING
 
 // Uncoment the next line to get text midi message at output

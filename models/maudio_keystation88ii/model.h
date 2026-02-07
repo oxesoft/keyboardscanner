@@ -44,8 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OUT_A_05 27 // PA5
 #define OUT_A_06 28 // PA6
 #define OUT_A_07 29 // PA7
-#define OUT_A_08 20 // PD1
-#define OUT_A_09 21 // PD0
+#define OUT_A_08 21 // PD0
+#define OUT_A_09 20 // PD1
 
 // Board B
 #define IN_B_00 A0 // PF0

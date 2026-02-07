@@ -48,119 +48,44 @@ extern byte curr_mask[KEYS_NUMBER >> 2];
 
 void scanMatrix()
 {
+    byte *mask = curr_mask;
     // the code below was tested using a maudio_keystation88ii
-    byte tmp;
-
-    digitalWrite2(OUT_A_00, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[0] = ~PINC;
-    digitalWrite2(OUT_A_00, HIGH);
-    digitalWrite2(OUT_A_01, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[1] = ~PINC;
-    digitalWrite2(OUT_A_01, HIGH);
-
-    digitalWrite2(OUT_A_02, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[2] = ~PINC;
-    digitalWrite2(OUT_A_02, HIGH);
-    digitalWrite2(OUT_A_03, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[3] = ~PINC;
-    digitalWrite2(OUT_A_03, HIGH);
-
-    digitalWrite2(OUT_A_04, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[4] = ~PINC;
-    digitalWrite2(OUT_A_04, HIGH);
-    digitalWrite2(OUT_A_05, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[5] = ~PINC;
-    digitalWrite2(OUT_A_05, HIGH);
-
-    digitalWrite2(OUT_A_06, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[6] = ~PINC;
-    digitalWrite2(OUT_A_06, HIGH);
-    digitalWrite2(OUT_A_07, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[7] = ~PINC;
-    digitalWrite2(OUT_A_07, HIGH);
-
-    digitalWrite2(OUT_A_08, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[8] = ~PINC;
-    digitalWrite2(OUT_A_08, HIGH);
-    digitalWrite2(OUT_A_09, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[9] = ~PINC;
-    digitalWrite2(OUT_A_09, HIGH);
-
-    digitalWrite2(OUT_B_08, LOW);
-    SETTLING_TIME_DELAY
-    tmp = ~PINK;
-    curr_mask[8] |= tmp & 1 ? 0b10000000 : 0;
-    digitalWrite2(OUT_B_08, HIGH);
-    digitalWrite2(OUT_B_09, LOW);
-    SETTLING_TIME_DELAY
-    tmp = ~PINK;
-    curr_mask[9] |= tmp & 1 ? 0b10000000 : 0;
-    digitalWrite2(OUT_B_09, HIGH);
-
-    digitalWrite2(OUT_B_00, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[10] = ~PINF;
-    digitalWrite2(OUT_B_00, HIGH);
-    digitalWrite2(OUT_B_01, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[11] = ~PINF;
-    digitalWrite2(OUT_B_01, HIGH);
-
-    digitalWrite2(OUT_B_02, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[12] = ~PINF;
-    digitalWrite2(OUT_B_02, HIGH);
-    digitalWrite2(OUT_B_03, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[13] = ~PINF;
-    digitalWrite2(OUT_B_03, HIGH);
-
-    digitalWrite2(OUT_B_04, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[14] = ~PINF;
-    digitalWrite2(OUT_B_04, HIGH);
-    digitalWrite2(OUT_B_05, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[15] = ~PINF;
-    digitalWrite2(OUT_B_05, HIGH);
-
-    digitalWrite2(OUT_B_06, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[16] = ~PINF;
-    digitalWrite2(OUT_B_06, HIGH);
-    digitalWrite2(OUT_B_07, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[17] = ~PINF;
-    digitalWrite2(OUT_B_07, HIGH);
-
-    digitalWrite2(OUT_B_08, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[18] = ~PINF;
-    digitalWrite2(OUT_B_08, HIGH);
-    digitalWrite2(OUT_B_09, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[19] = ~PINF;
-    digitalWrite2(OUT_B_09, HIGH);
-
-    digitalWrite2(OUT_B_10, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[20] = ~PINF;
-    digitalWrite2(OUT_B_10, HIGH);
-    digitalWrite2(OUT_B_11, LOW);
-    SETTLING_TIME_DELAY
-    curr_mask[21] = ~PINF;
-    digitalWrite2(OUT_B_11, HIGH);
-
+    for (byte row = 0; row < 8; row++)
+    {
+        PORTA = ~(1 << row);
+        SETTLING_TIME_DELAY
+        *(mask++) = ~PINC;
+        PORTA = 0xFF;
+    }
+    for (byte row = 0; row < 2; row++)
+    {
+        PORTD = ~(1 << row);
+        SETTLING_TIME_DELAY
+        *(mask++) = ~PINC;
+        PORTD = 0xFF;
+    }
+    for (byte row = 0; row < 2; row++)
+    {
+        PORTB = ~(1 << row);
+        SETTLING_TIME_DELAY
+        byte tmp = ~PINK;
+        curr_mask[row + 8] |= tmp & 1 ? 0b10000000 : 0;
+        PORTB = 0xFF;
+    }
+    for (byte row = 0; row < 8; row++)
+    {
+        PORTL = ~(1 << row);
+        SETTLING_TIME_DELAY
+        *(mask++) = ~PINF;
+        PORTL = 0xFF;
+    }
+    for (byte row = 0; row < 4; row++)
+    {
+        PORTB = ~(1 << row);
+        SETTLING_TIME_DELAY
+        *(mask++) = ~PINF;
+        PORTB = 0xFF;
+    }
     sustain_pedal_signal = digitalRead2(SUSTAIN_PEDAL_PIN);
 }
 
