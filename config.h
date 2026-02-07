@@ -2,21 +2,23 @@
 
 // #define DEBUG_SCANS_PER_SECOND
 /*
-For reference, I've got these results at the time that I tested it for 61 keys:
+For reference, I've got these results at the time that I tested it for 61 keys and random pin mapping:
  426 cyles per second (2,35ms per cycle) using standard digitalWrite/digitalRead
  896 cyles per second (1,11ms per cycle) using DIO2 digitalWrite2/digitalRead2
 1185 cyles per second (0,94ms per cycle) using DIO2 digitalWrite2/digitalRead2 with static variables
 */
+
+// Uncoment the next line if you have connected the matrix columns mapped to Arduino's PORTs
+// It requiers modifying scanner.cpp code to match your PORTs mapping
+// See https://devboards.info/boards/arduino-mega2560-rev3
+// The gain on scans per second (Hz) is around 5 times compared to the random pin mapping
+// #define DIRECT_PORTS_READING
 
 // Uncoment the next line to get text midi message at output
 // #define DEBUG_MIDI_MESSAGE
 
 // Enables debug mode to check MIN_TIME_US and MAX_TIME_US values
 // #define DEBUG_VELOCITY_TIMES
-
-// Cheap keyboards often has the black keys softer or harder than the white ones
-// Uncomment the next line to allow a soft correction
-// #define BLACK_KEYS_VELOCITY_MULTIPLIER 115 // 127 is the central value (corresponding to 1.0)
 
 // Uncoment the following lines to use potentiometers (pitch bend, modulation wheel, knobs and sliders)
 // #define ENABLE_POTENTIOMETER_SUPPORT

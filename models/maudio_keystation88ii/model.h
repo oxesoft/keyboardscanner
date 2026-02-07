@@ -18,11 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define KEYS_NUMBER       88
-#define FIRST_KEY         21
-#define SUSTAIN_PEDAL_PIN 14
-#define MIN_TIME_US       2500
-#define MAX_TIME_US       15000
+#define KEYS_NUMBER                    88
+#define FIRST_KEY                      21
+#define SUSTAIN_PEDAL_PIN              14
+#define MIN_TIME_US                    2500
+#define MAX_TIME_US                    15000
+#define BLACK_KEYS_VELOCITY_MULTIPLIER 110 // 127 is the central value (corresponding to 1.0)
 
 // Board A
 #define IN_A_00 29

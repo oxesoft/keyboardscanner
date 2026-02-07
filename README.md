@@ -17,7 +17,7 @@ He made the PDF showing the keyboard wiring for Yamaha PSR530 keyboard, that hel
 
 In 2025 Emerson Seiler did a great job adding Kurzweil SP76II configuration + schematics, velocity sensitivity curves and potentiomers support, as he shows [here](https://www.youtube.com/watch?v=GndR5BkHnv0). He also suggested to explode the code into small pieces.
 
-I started 2026 working on top Emerson Seiler's job as an opportunity to do a refactoring, creating the concept of "models" and merging his code into the main line.
+I started 2026 working on Emerson Seiler's job as an opportunity to do a refactoring, creating the concept of "models" and merging his code into the main line. I also experimented mapping the rows x cols in a most professional way (matching the cols to Arduino Mega PORTs) to observe the gain in scans per second (Hz). It is about 5 times. I've got a stable 5KHz using my M-Audio Keystation 88 II keybed.
 
 ## Features
 

@@ -124,10 +124,13 @@ int main()
 
     int index = 0;
 
+    const unsigned long MAXIMUM_VELOCITY_MICROSECONDS = MIN_TIME_US;
+
     // start pressing key
     setRubberKey(index, RUBBER_KEY_PRESSED);
     loop();
     // fully immediate pressing key
+    advanceMockMicros(MAXIMUM_VELOCITY_MICROSECONDS);
     setRubberKey(index + 1, RUBBER_KEY_PRESSED);
     loop();
     assert(Serial.available() == 3);
@@ -139,6 +142,7 @@ int main()
     setRubberKey(index + 1, RUBBER_KEY_RELEASED);
     loop();
     // fully pressing key with maximum velocity
+    advanceMockMicros(MAXIMUM_VELOCITY_MICROSECONDS);
     setRubberKey(index, RUBBER_KEY_RELEASED);
     loop();
     assert(Serial.available() == 3);
