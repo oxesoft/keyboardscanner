@@ -40,19 +40,19 @@ bool isBlack(byte note) {
 
 void sendKeyEvent(byte status_byte, byte key_index, unsigned long time)
 {
+    byte key = FIRST_KEY + key_index;
+#ifdef BLACK_KEYS_VELOCITY_MULTIPLIER
+    if (isBlack(key))
+    {
+        time = (time * BLACK_KEYS_VELOCITY_MULTIPLIER) >> 7;
+    }
+#endif
     unsigned long t = constrain(time, MIN_TIME_US, MAX_TIME_US);
     t -= MIN_TIME_US;
 
     unsigned long linear_velocity = 127 - ((t * 127) / (MAX_TIME_US - MIN_TIME_US));
     byte vel = VELOCITY_CURVE[linear_velocity];
-    byte key = FIRST_KEY + key_index;
 
-#ifdef BLACK_KEYS_VELOCITY_MULTIPLIER
-    if (isBlack(key))
-    {
-        vel = (byte)(((int)vel * BLACK_KEYS_VELOCITY_MULTIPLIER) >> 7);
-    }
-#endif
 #ifdef DEBUG_VELOCITY_TIMES
     Serial.print("KEY_");
     Serial.print(status_byte == 0x90 ? "ON " : "OFF");

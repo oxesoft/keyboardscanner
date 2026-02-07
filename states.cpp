@@ -100,7 +100,7 @@ void updateStates()
             uint8_t bit = changed & -changed;   // isolate lowest set bit
             changed ^= bit;                     // clear it
 
-            byte key_in_group = 7 - __builtin_ctz(bit);  // 0..7
+            byte key_in_group = __builtin_ctz(bit);  // 0..7
             byte key = g * 8 + key_in_group;
 
             bool up = up_curr & bit;

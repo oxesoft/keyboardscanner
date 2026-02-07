@@ -23,49 +23,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SUSTAIN_PEDAL_PIN              14
 #define MIN_TIME_US                    2500
 #define MAX_TIME_US                    15000
-#define BLACK_KEYS_VELOCITY_MULTIPLIER 110 // 127 is the central value (corresponding to 1.0)
+#define BLACK_KEYS_VELOCITY_MULTIPLIER 140 // 127 is the central value (corresponding to 1.0)
+#define SETTLING_TIME_MICROSECONDS     4   // Increase it to prevent false readings due to matrix capacitance (something between 2 and 5 should be enough)
 
 // Board A
-#define IN_A_00 29
-#define IN_A_01 28
-#define IN_A_02 27
-#define IN_A_03 26
-#define IN_A_04 25
-#define IN_A_05 24
-#define IN_A_06 23
-#define IN_A_07 22
+#define IN_A_00 37 // PC0
+#define IN_A_01 36 // PC1
+#define IN_A_02 35 // PC2
+#define IN_A_03 34 // PC3
+#define IN_A_04 33 // PC4
+#define IN_A_05 32 // PC5
+#define IN_A_06 31 // PC6
+#define IN_A_07 30 // PC7
 
-#define OUT_A_00 30
-#define OUT_A_01 31
-#define OUT_A_02 32
-#define OUT_A_03 33
-#define OUT_A_04 34
-#define OUT_A_05 35
-#define OUT_A_06 36
-#define OUT_A_07 37
-#define OUT_A_08 40
-#define OUT_A_09 41
+#define OUT_A_00 22 // PA0
+#define OUT_A_01 23 // PA1
+#define OUT_A_02 24 // PA2
+#define OUT_A_03 25 // PA3
+#define OUT_A_04 26 // PA4
+#define OUT_A_05 27 // PA5
+#define OUT_A_06 28 // PA6
+#define OUT_A_07 29 // PA7
+#define OUT_A_08 20 // PD1
+#define OUT_A_09 21 // PD0
 
 // Board B
-#define IN_B_00 A15
-#define IN_B_01 A14
-#define IN_B_02 A13
-#define IN_B_03 A12
-#define IN_B_04 A11
-#define IN_B_05 A10
-#define IN_B_06 A9
-#define IN_B_07 A8
-#define IN_B_08 A7
+#define IN_B_00 A0 // PF0
+#define IN_B_01 A1 // PF1
+#define IN_B_02 A2 // PF2
+#define IN_B_03 A3 // PF3
+#define IN_B_04 A4 // PF4
+#define IN_B_05 A5 // PF5
+#define IN_B_06 A6 // PF6
+#define IN_B_07 A7 // PF7
+#define IN_B_08 A8 // PK0
 
-#define OUT_B_00 42
-#define OUT_B_01 43
-#define OUT_B_02 44
-#define OUT_B_03 45
-#define OUT_B_04 46
-#define OUT_B_05 47
-#define OUT_B_06 48
-#define OUT_B_07 49
-#define OUT_B_08 50
-#define OUT_B_09 51
-#define OUT_B_10 52
-#define OUT_B_11 53
+#define OUT_B_00 49 // PL0
+#define OUT_B_01 48 // PL1
+#define OUT_B_02 47 // PL2
+#define OUT_B_03 46 // PL3
+#define OUT_B_04 45 // PL4
+#define OUT_B_05 44 // PL5
+#define OUT_B_06 43 // PL6
+#define OUT_B_07 42 // PL7
+#define OUT_B_08 53 // PB0
+#define OUT_B_09 52 // PB1
+#define OUT_B_10 51 // PB2
+#define OUT_B_11 50 // PB3
