@@ -31,7 +31,7 @@ I started 2026 working on Emerson Seiler's job as an opportunity to do a refacto
 
 Normally it is a ribbon rubber with two contacts for each key that touch the board in two diffent moments:
 since the key was pressed until it slopes the board completly. The code measure the difference, varying between
-2 and 20 ms (useful range), depending on the keyboard. It is transformed in a MIDI value from 0 to 127.
+2 and 20 ms (useful range), depending on the keyboard. It is transformed into a MIDI value from 0 to 127.
 
 ## Diagram of one rubber key
 
