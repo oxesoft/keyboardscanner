@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 
 x = np.linspace(0, 1, 128)
 
-x = np.linspace(0, 1, 128)
-
 velocity_floor = 12
 
 split = 0.42        # previously: 0.35 → mid range starts later
