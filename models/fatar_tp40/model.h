@@ -56,8 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PIN_CB26 52
 #define PIN_CB27 18
 #define PIN_CB28 19
-#define PIN_CB29 20
-#define PIN_CB30 21
+#define PIN_CB29 6
+#define PIN_CB30 5
 #define PIN_CB31 43
 #define PIN_CB32 45
 #define PIN_CB33 47

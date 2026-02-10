@@ -35,4 +35,37 @@ void initPotentiometers();
 void readPotentiometers();
 #endif
 
+#ifdef ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+void initMidiAssignments();
+void readMidiAssignments();
+
+enum MidiBtnMode : uint8_t {
+  MIDI_BTN_MODE_TOGGLE = 0,
+  MIDI_BTN_MODE_PUSH   = 1
+};
+
+struct MidiButtonMapping {
+  uint8_t channel;  // 1-16
+  uint8_t cc;       // 0-127
+  uint8_t mode;     // MidiBtnMode
+};
+
+struct MidiPotMapping {
+  uint8_t channel;  // 1-16
+  uint8_t cc;       // 0-127 (fixed by config for now)
+  uint8_t min;      // 0-127
+  uint8_t max;      // 0-127
+};
+
+MidiButtonMapping getMidiAssignButtonMapping(uint8_t idx);
+void setMidiAssignButtonMapping(uint8_t idx, const MidiButtonMapping& m);
+
+MidiPotMapping getMidiAssignPotMapping(uint8_t idx);
+void setMidiAssignPotMapping(uint8_t idx, const MidiPotMapping& m);
+#endif
+
+#ifdef ENABLE_UI
+void initUi();
+void updateUi();
+#endif
 #endif

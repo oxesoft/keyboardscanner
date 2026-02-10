@@ -1,4 +1,4 @@
-#define MODEL_NAME maudio_keystation88ii // change here your keyboard model
+#define MODEL_NAME fatar_tp40 // change here your keyboard model
 
 // #define DEBUG_SCANS_PER_SECOND
 /*
@@ -35,4 +35,35 @@ For reference, I've got these results at the time that I tested it for 61 keys a
 //     POT_TYPE_MODWHEEL
 // };
 
-#define SERIAL_SPEED 31250 // 115200 for hairless; 31250 for MOCO lufa
+// Uncomment the next line if you connected buttons or potentiometers to the controller's mappable function on the Arduino.
+#define ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+
+// Uncomment the next line to activate buttons.
+// The default CH will be 1 and the default CC will be = 20 + respective index, you must change it via the interface if you want to customize it.
+#define ENABLE_MIDI_ASSIGN_BUTTONS
+#define BUTTONS_ASSIGN_NUMBER          4
+const int MIDI_BUTTONS_PINS[BUTTONS_ASSIGN_NUMBER] = { 8, 9, 10, 11};
+
+// Uncomment the next lines to activate potentiometers (CC ONLY).
+// The default CH will be 1 and the default CC will be = 30 + respective index, you must change it via the interface if you want to customize it.
+// #define ENABLE_MIDI_ASSIGN_POTS
+// #define POTS_ASSIGN_NUMBER             2
+// const int MIDI_POTS_ANALOG_PINS[POTS_ASSIGN_NUMBER] = { A2, A3 }; // Start from A2, as A0 and A1 are reserved for pitchband and modulation.
+// #define POTS_ASSIGN_RESOLUTION_MICROSECONDS  5000
+// #define POTS_ASSIGN_THRESHOLD_VALUE          8 // ~1 MIDI step
+
+// Uncomment the next lines from the following line if you have connected an I2C display, an encoder for navigation and back button.
+#define ENABLE_UI
+// Display OLED I2C 128x64 
+// I2C uses pins 20 and 21 on the Arduino Mega; ensure the matrix does not use these pins.
+#define UI_USE_OLED_128x64 1
+#define UI_OLED_ADDR 0x3C
+#define UI_OLED_RESET_PIN -1
+
+// Encoder + back button
+#define UI_PIN_BACK_BTN 7 // back button
+#define UI_PIN_ENC_CLK  2
+#define UI_PIN_ENC_DT   3
+#define UI_PIN_ENC_SW   4
+
+#define SERIAL_SPEED 115200 // 115200 for hairless; 31250 for MOCO lufa
