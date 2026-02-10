@@ -27,6 +27,12 @@ void setup()
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
     initPotentiometers();
 #endif
+#ifdef ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+    initMidiAssignments();
+#endif
+#ifdef ENABLE_UI
+    initUi();
+#endif
 }
 
 void loop()
@@ -38,5 +44,11 @@ void loop()
     updateStates();
 #ifdef ENABLE_POTENTIOMETER_SUPPORT
     readPotentiometers();
+#endif
+#ifdef ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+    readMidiAssignments();
+#endif
+#ifdef ENABLE_UI
+    updateUi();
 #endif
 }
