@@ -39,10 +39,8 @@ byte rubber_keys[KEYS_NUMBER * 2] = {RUBBER_KEY_RELEASED};
 byte pin_modes[NUM_DIGITAL_PINS] = {INPUT};
 int output_pin;
 boolean sustain_pedal = HIGH;
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
 int analog_pins[16] = {0};
 int analog_reads_counter = 0;
-#endif
 
 // Static variable for mock timing
 static unsigned long mockMicros = 0;
@@ -79,7 +77,6 @@ int digitalRead2(int pin)
     return LOW;
 }
 
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
 int analogRead(int pin)
 {
     analog_reads_counter++;
@@ -93,12 +90,15 @@ int analogRead(int pin)
     printf("Unexpected analogRead(%d)\n", pin);
     return 0;
 }
-#endif
 
 // Timing functions implementation
 unsigned long micros()
 {
     return mockMicros;
+}
+
+void delayMicroseconds(unsigned long ms)
+{
 }
 
 // Helper functions for mock control
@@ -122,7 +122,6 @@ byte getPinMode(int pin)
     return pin_modes[pin];
 }
 
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
 void setPotentiometerValue(int index, int value)
 {
     analog_pins[index] = value;
@@ -132,7 +131,6 @@ int getAnalogReadsCount()
 {
     return analog_reads_counter;
 }
-#endif
 
 // SerialMock class implementations
 void SerialMock::begin(unsigned long baud)

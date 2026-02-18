@@ -18,6 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Enables debug mode to check MIN_TIME_US and MAX_TIME_US values
+// #define DEBUG_VELOCITY_TIMES
+
+// Uncoment the next line to get text midi message at output
+// #define DEBUG_MIDI_MESSAGE
+
 #define DEFINE_BLACK_KEYS_MAP
 #include "globals.h"
 #include "velocity.h"

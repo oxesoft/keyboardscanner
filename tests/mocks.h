@@ -27,3 +27,26 @@ void setSustainPedal(bool pressed);
 void setPotentiometerValue(int index, int value);
 int getAnalogReadsCount();
 byte getPinMode(int i);
+
+// please copy the following configuration from potentiometers.cpp
+#define POTS_RESOLUTION_MICROSECONDS  5000
+#define POTS_THRESHOLD_VALUE          8 // 1024 divided by 128
+#define POTS_PB_CENTER_DEADZONE       4
+#define POTS_NUMBER                   2
+#define POT_TYPE_PITCHBEND       0xE000
+#define POT_TYPE_MODWHEEL        0xB001
+#define POT_TYPE_VOLUME          0xB007
+#define POT_TYPE_PAN             0xB00A
+#define POT_TYPE_EXPRESSION      0xB00B
+#define POT_TYPE_RESONANCE       0xB047
+#define POT_TYPE_FILTER          0xB04A
+#define POT_TYPE_REVERB          0xB05B
+#define POT_TYPE_CHORUS          0xB05D
+const int POTS_ANALOG_PINS[POTS_NUMBER] = {
+    A0,
+    A1
+};
+const int POTS_TYPES[POTS_NUMBER] = {
+    POT_TYPE_PITCHBEND,
+    POT_TYPE_MODWHEEL
+};

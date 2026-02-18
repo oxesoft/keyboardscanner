@@ -20,23 +20,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.h"
 
+#define EXTENSION(name) void name##Setup(); void name##Loop();
+#include "extensions.h"
+#undef EXTENSION
+
 void setup()
 {
-    Serial.begin(SERIAL_SPEED);
-    initIOPins();
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    initPotentiometers();
-#endif
+    Serial.begin(31250); // 115200 for hairless; 31250 for MOCO lufa
+    scannerSetup();
+    #define EXTENSION(name) name##Setup();
+    #include "extensions.h"
+    #undef EXTENSION
 }
 
 void loop()
 {
-#ifdef DEBUG_SCANS_PER_SECOND
-    countCycles();
-#endif
-    scanMatrix();
-    updateStates();
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    readPotentiometers();
-#endif
+    scannerLoop();
+    statesLoop();
+    #define EXTENSION(name) name##Loop();
+    #include "extensions.h"
+    #undef EXTENSION
 }

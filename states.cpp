@@ -30,7 +30,7 @@ unsigned long keys_time [KEYS_NUMBER] = {0};
 byte          sustain_pedal_signal;
 byte          sustain_pedal_signal_previous = HIGH;
 
-void handleKey(byte key, boolean upper, boolean lower)
+static void handleKey(byte key, boolean upper, boolean lower)
 {
     switch (keys_state[key])
     {
@@ -78,7 +78,7 @@ void handleKey(byte key, boolean upper, boolean lower)
 byte prev_mask[KEYS_NUMBER >> 2];
 byte curr_mask[KEYS_NUMBER >> 2];
 
-void updateStates()
+void statesLoop()
 {
     for (uint8_t g = 0; g < NUM_GROUPS; g++) {
 
@@ -122,7 +122,7 @@ void updateStates()
 
 boolean matrix_signals[KEYS_NUMBER * 2] = {LOW};
 
-void updateStates()
+void statesLoop()
 {
     boolean *signal = matrix_signals;
     for (byte key = 0; key < KEYS_NUMBER; key++)

@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#import "globals.h"
+// Uncoment the next line if you have connected the matrix columns mapped to Arduino's PORTs
+// #define DIRECT_PORTS_READING
+
+#include "globals.h"
 #define MODEL_PINS_DEF models/MODEL_NAME/pins.h
 extern byte sustain_pedal_signal;
 #include <DIO2.h> // install the library DIO2
@@ -29,7 +32,7 @@ extern byte sustain_pedal_signal;
 #define SETTLING_TIME_DELAY
 #endif
 
-void initIOPins()
+void scannerSetup()
 {
     pinMode2(LED_BUILTIN, OUTPUT);
     digitalWrite2(LED_BUILTIN, LOW);
@@ -46,10 +49,13 @@ void initIOPins()
 
 extern byte curr_mask[KEYS_NUMBER >> 2];
 
-void scanMatrix()
+void scannerLoop()
 {
+    // It requires modifying the following code to match your PORTs mapping
+    // See https://devboards.info/boards/arduino-mega2560-rev3
+    // The gain on scans per second (Hz) is around 7 times compared to the random pin mapping
+    // This code was tested using a maudio_keystation88ii
     byte *mask = curr_mask;
-    // the code below was tested using a maudio_keystation88ii
     for (byte row = 0; row < 8; row++)
     {
         PORTA = ~(1 << row);
@@ -93,7 +99,7 @@ void scanMatrix()
 
 extern boolean matrix_signals[KEYS_NUMBER * 2];
 
-void scanMatrix()
+void scannerLoop()
 {
     boolean *s = matrix_signals;
     #define PINS(output_pin, input_pin) \
