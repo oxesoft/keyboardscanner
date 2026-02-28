@@ -1,6 +1,6 @@
 /*
-Moura's Keyboard Scanner: turn you broken (or unused) keyboard in a MIDI
-controller Copyright (C) 2017 Daniel Moura <oxesoft@gmail.com>
+Moura's Keyboard Scanner: turn you broken (or unused) keyboard in a MIDI controller
+Copyright (C) 2017 Daniel Moura <oxesoft@gmail.com>
 
 This code is originally hosted at https://github.com/oxesoft/keyboardscanner
 
@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "globals.h"
+#include "ui.h"
 
 #ifdef ENABLE_UI
 

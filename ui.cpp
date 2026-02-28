@@ -18,23 +18,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#include "globals.h"
+#include "ui.h"
 
-#include <Arduino.h>
-
-#define MODEL_NAME maudio_keystation88ii // change here your keyboard model
-
-#define MODEL_HEADER_PATH models/MODEL_NAME/model.h
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-#include STR(MODEL_HEADER_PATH)
-
-void scannerSetup();
-void scannerLoop();
-void statesLoop();
-void sendKeyEvent(byte status_byte, byte key_index, unsigned long time);
-void sendSustainPedalEvent(boolean pressed);
-void sendMidiEvent(byte status_byte, byte data1, byte data2);
-
+void uiSetup()
+{
+#ifdef ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+    initMidiAssignments();
 #endif
+#ifdef ENABLE_UI
+    initUi();
+#endif
+}
+
+void uiLoop()
+{
+#ifdef ENABLE_MIDI_ASSIGNMENTS_SUPPORT
+    readMidiAssignments();
+#endif
+#ifdef ENABLE_UI
+    updateUi();
+#endif
+}
