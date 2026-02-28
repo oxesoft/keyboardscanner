@@ -25,6 +25,7 @@ typedef unsigned char byte;
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define min(a,b) ((a)<(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
 #define map(value,fromLow,fromHigh,toLow,toHigh) (((value)-(fromLow))*((toHigh)-(toLow))/((fromHigh)-(fromLow))+(toLow))
 
 #define INPUT 0
@@ -56,6 +57,7 @@ typedef unsigned char byte;
 int analogRead(int pin);
 
 unsigned long micros();
+void delayMicroseconds(unsigned long ms);
 
 void setup();
 void loop();

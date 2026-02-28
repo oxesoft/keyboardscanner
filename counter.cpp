@@ -18,10 +18,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+For reference, I've got these results at the time that I tested it for 61 keys and random pin mapping:
+ 426 Hz using standard digitalWrite/digitalRead
+ 896 Hz using DIO2 digitalWrite2/digitalRead2
+1185 Hz using DIO2 digitalWrite2/digitalRead2 with static variables
+*/
+
 #include "globals.h"
 
-#ifdef DEBUG_SCANS_PER_SECOND
-void countCycles()
+void counterSetup()
+{
+}
+
+void counterLoop()
 {
     static unsigned long cycles = 0;
     static unsigned long start = 0;
@@ -35,4 +45,3 @@ void countCycles()
         start = current;
     }
 }
-#endif

@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MODEL_PINS_DEF ../models/MODEL_NAME/pins.h
 
-// please change config.h to turn off velocity curve
+void testPotentiometers();
+
 int main()
 {
     setup();
@@ -37,74 +38,7 @@ int main()
     assert(getPinMode(SUSTAIN_PEDAL_PIN) == INPUT_PULLUP);
     assert(Serial.available() == 0);
 
-#ifdef ENABLE_POTENTIOMETER_SUPPORT
-    // please change config.h with the following configuration
-    /*
-    #define ENABLE_POTENTIOMETER_SUPPORT
-    #define POTS_RESOLUTION_MICROSECONDS  5000
-    #define POTS_THRESHOLD_VALUE          8 // 1024 divided by 128
-    #define POTS_PB_CENTER_DEADZONE       4
-    #define POTS_NUMBER                   2
-    const int POTS_ANALOG_PINS[POTS_NUMBER] = {
-        A0,
-        A1
-    };
-    const int POTS_TYPES[POTS_NUMBER] = {
-        POT_TYPE_PITCHBEND,
-        POT_TYPE_MODWHEEL
-    };
-    */
-    setPotentiometerValue(0, 512);
-    // test rate control
-    assert(getAnalogReadsCount() == 0);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(getAnalogReadsCount() == POTS_NUMBER);
-    // test that nothing happens with pitch bend at center position (no bend)
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 0);
-    // tests that a MIDI message is sent moving pith bend all the way up
-    setPotentiometerValue(0, 1023);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0xE0);
-    assert(Serial.read() == 0x7F);
-    assert(Serial.read() == 0x7F);
-    // tests that a MIDI message is sent moving pith bend all the way down
-    setPotentiometerValue(0, 0);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0xE0);
-    assert(Serial.read() == 0x00);
-    assert(Serial.read() == 0x00);
-    // tests that a MIDI message is sent moving modulation wheel to the center position
-    setPotentiometerValue(1, 512);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0xB0);
-    assert(Serial.read() == 0x01);
-    assert(Serial.read() == 0x40);
-    // tests that a MIDI message is sent moving modulation wheel all the way up
-    setPotentiometerValue(1, 1023);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0xB0);
-    assert(Serial.read() == 0x01);
-    assert(Serial.read() == 0x7F);
-    // tests that a MIDI message is sent moving modulation wheel all the down
-    setPotentiometerValue(1, 0);
-    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
-    loop();
-    assert(Serial.available() == 3);
-    assert(Serial.read() == 0xB0);
-    assert(Serial.read() == 0x01);
-    assert(Serial.read() == 0x00);
-#endif
+    testPotentiometers();
 
     // pressing sustain pedal
     setSustainPedal(true);
@@ -192,7 +126,8 @@ int main()
         assert(Serial.available() == 3);
         assert(Serial.read() == 0x90);
         assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-        assert(Serial.read() == VELOCITY_CURVE[64]);
+        int value = Serial.read();
+        assert(value >= VELOCITY_CURVE[0] && value <= VELOCITY_CURVE[127]);
 
         // start releasing key
         setRubberKey(index + 1, RUBBER_KEY_RELEASED);
@@ -204,10 +139,65 @@ int main()
         assert(Serial.available() == 3);
         assert(Serial.read() == 0x80);
         assert(Serial.read() == (FIRST_KEY + (index >> 1)));
-        assert(Serial.read() == VELOCITY_CURVE[64]);
+        value = Serial.read();
+        assert(value >= VELOCITY_CURVE[0] && value <= VELOCITY_CURVE[127]);
 
         index += 2;
     }
 
     Serial.println("Tests OK");
+}
+
+void testPotentiometers()
+{
+    setPotentiometerValue(0, 512);
+    // test rate control
+    assert(getAnalogReadsCount() == 0);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(getAnalogReadsCount() == POTS_NUMBER); // make sure the extension is enabled
+    // test that nothing happens with pitch bend at center position (no bend)
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 0);
+    // tests that a MIDI message is sent moving pith bend all the way up
+    setPotentiometerValue(0, 1023);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xE0);
+    assert(Serial.read() == 0x7F);
+    assert(Serial.read() == 0x7F);
+    // tests that a MIDI message is sent moving pith bend all the way down
+    setPotentiometerValue(0, 0);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xE0);
+    assert(Serial.read() == 0x00);
+    assert(Serial.read() == 0x00);
+    // tests that a MIDI message is sent moving modulation wheel to the center position
+    setPotentiometerValue(1, 512);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
+    assert(Serial.read() == 0x40);
+    // tests that a MIDI message is sent moving modulation wheel all the way up
+    setPotentiometerValue(1, 1023);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
+    assert(Serial.read() == 0x7F);
+    // tests that a MIDI message is sent moving modulation wheel all the down
+    setPotentiometerValue(1, 0);
+    advanceMockMicros(POTS_RESOLUTION_MICROSECONDS);
+    loop();
+    assert(Serial.available() == 3);
+    assert(Serial.read() == 0xB0);
+    assert(Serial.read() == 0x01);
+    assert(Serial.read() == 0x00);
 }

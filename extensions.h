@@ -1,0 +1,2 @@
+// EXTENSION(counter)
+// EXTENSION(potentiometers)
